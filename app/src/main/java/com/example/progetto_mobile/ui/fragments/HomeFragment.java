@@ -8,14 +8,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.example.progetto_mobile.Expense;
-import com.example.progetto_mobile.ExpenseAdapter;
+import com.example.progetto_mobile.data.Expense;
+import com.example.progetto_mobile.ui.adapters.ExpenseAdapter;
 import com.example.progetto_mobile.HomeViewModel;
 import com.example.progetto_mobile.R;
 import com.example.progetto_mobile.databinding.FragmentHomeBinding;
-import java.util.List;
+
 import java.util.Locale;
 
 public class HomeFragment extends Fragment {
@@ -48,12 +47,14 @@ public class HomeFragment extends Fragment {
         adapter = new ExpenseAdapter(new ExpenseAdapter.OnExpenseClickListener() {
             @Override
             public void onExpenseClick(Expense expense) {
-                // dettaglio spesa — lo faremo dopo
+                // Apre il detail bottom sheet
+                ExpenseDetailBottomSheet.newInstance(expense)
+                        .show(getParentFragmentManager(), "ExpenseDetail");
             }
 
             @Override
             public void onExpenseLongClick(Expense expense) {
-                // elimina spesa — lo faremo dopo
+                // Puoi lasciarlo vuoto o fare la stessa cosa del click
             }
         });
 
@@ -62,27 +63,21 @@ public class HomeFragment extends Fragment {
     }
 
     private void observeExpenses() {
-        viewModel.getExpenses().observe(getViewLifecycleOwner(), expenses -> {
-            // Mostra solo le ultime 5 nella home
-            List<Expense> recent = expenses.size() > 5
-                    ? expenses.subList(0, 5)
-                    : expenses;
-
-            adapter.setExpenses(recent);
-
-            // Mostra/nascondi messaggio vuoto
-            if (expenses.isEmpty()) {
+        viewModel.getRecentExpenses().observe(getViewLifecycleOwner(), expenses -> {
+            if (expenses == null || expenses.isEmpty()) {
                 binding.rvRecentExpenses.setVisibility(View.GONE);
                 binding.tvEmpty.setVisibility(View.VISIBLE);
             } else {
                 binding.rvRecentExpenses.setVisibility(View.VISIBLE);
                 binding.tvEmpty.setVisibility(View.GONE);
+                adapter.setExpenses(expenses);
             }
+        });
 
-            // Aggiorna totale giornaliero
-            double total = viewModel.getTodayTotal();
+        viewModel.getTodayTotal().observe(getViewLifecycleOwner(), total -> {
+            double amount = (total != null) ? total : 0.0;
             binding.tvTodayTotal.setText(
-                    String.format(Locale.getDefault(), "Oggi hai speso: %.2f €", total)
+                    String.format(Locale.getDefault(), "Oggi hai speso: %.2f €", amount)
             );
         });
     }

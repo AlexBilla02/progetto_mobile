@@ -1,56 +1,58 @@
 package com.example.progetto_mobile;
 
+import android.app.Application;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-import java.util.ArrayList;
+
+import com.example.progetto_mobile.data.AppDatabase;
+import com.example.progetto_mobile.data.Expense;
+import com.example.progetto_mobile.data.ExpenseDao;
+
+import java.util.Calendar;
 import java.util.List;
 
-public class HomeViewModel extends ViewModel {
+// AndroidViewModel invece di ViewModel perché abbiamo bisogno del Context
+// per creare il database
+public class HomeViewModel extends AndroidViewModel {
 
-    // Lista in memoria — quando integreremo Room, questo diventerà un DAO
-    private final MutableLiveData<List<Expense>> expenses = new MutableLiveData<>(new ArrayList<>());
+    private final ExpenseDao dao;
+    private final LiveData<List<Expense>> recentExpenses;
+    private final LiveData<Double> todayTotal;
 
-    public LiveData<List<Expense>> getExpenses() {
-        return expenses;
+    public HomeViewModel(Application application) {
+        super(application);
+        dao = AppDatabase.getInstance(application).expenseDao();
+        recentExpenses = dao.getRecentExpenses(5);
+        // Niente più "now" fisso — prende tutto da inizio giornata in poi
+        todayTotal = dao.getTotalFrom(getStartOfDayMillis());
+    }
+
+    public LiveData<List<Expense>> getRecentExpenses() {
+        return recentExpenses;
+    }
+
+    public LiveData<Double> getTodayTotal() {
+        return todayTotal;
     }
 
     public void addExpense(Expense expense) {
-        List<Expense> current = expenses.getValue();
-        if (current == null) current = new ArrayList<>();
-        current.add(0, expense); // aggiunge in cima (più recente prima)
-        expenses.setValue(current);
+        // Eseguito in background tramite ExecutorService
+        AppDatabase.executor.execute(() -> dao.insert(expense));
     }
 
+    public void updateExpense(Expense expense) {
+        AppDatabase.executor.execute(() -> dao.update(expense));
+    }
     public void removeExpense(Expense expense) {
-        List<Expense> current = expenses.getValue();
-        if (current != null) {
-            current.remove(expense);
-            expenses.setValue(current);
-        }
-    }
-
-    // Somma le spese di oggi
-    public double getTodayTotal() {
-        List<Expense> list = expenses.getValue();
-        if (list == null) return 0;
-
-        long startOfDay = getStartOfDayMillis();
-        double total = 0;
-        for (Expense e : list) {
-            if (e.getDate() >= startOfDay) {
-                total += e.getAmount();
-            }
-        }
-        return total;
+        AppDatabase.executor.execute(() -> dao.delete(expense));
     }
 
     private long getStartOfDayMillis() {
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        cal.set(java.util.Calendar.MINUTE, 0);
-        cal.set(java.util.Calendar.SECOND, 0);
-        cal.set(java.util.Calendar.MILLISECOND, 0);
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTimeInMillis();
     }
 }

@@ -146,7 +146,29 @@
                 android:inputType="none" />
 
         </com.google.android.material.textfield.TextInputLayout>
+        <!-- Orario -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:hint="Orario"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_history"
+            app:boxCornerRadiusBottomEnd="10dp"
+            app:boxCornerRadiusBottomStart="10dp"
+            app:boxCornerRadiusTopEnd="10dp"
+            app:boxCornerRadiusTopStart="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
         <!-- Note (opzionale) -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_note"

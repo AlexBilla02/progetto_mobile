@@ -1,4 +1,4 @@
-package com.example.progetto_mobile;
+package com.example.progetto_mobile.data;
 
 import com.example.progetto_mobile.R;
 
