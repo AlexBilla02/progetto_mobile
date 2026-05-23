@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Sfondo grigio -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <!-- <corners android:radius="@dimen/budget_bar_corner_radius" /> -->
+            <solid android:color="@color/surface_variant" />
+        </shape>
+    </item>
+
+    <!-- Riempimento colorato -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape android:shape="rectangle">
+                <!-- <corners android:radius="@dimen/budget_bar_corner_radius" /> -->
+                <solid android:color="@color/budget_ok" />
+            </shape>
+        </clip>
+    </item>
+
+</layer-list>

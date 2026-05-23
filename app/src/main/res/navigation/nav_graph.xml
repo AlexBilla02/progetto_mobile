@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.progetto_mobile.ui.fragments.HomeFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.progetto_mobile.ui.fragments.HistoryFragment"
+        android:label="Storico" />
+
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="com.example.progetto_mobile.ui.fragments.StatsFragment"
+        android:label="Statistiche" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.progetto_mobile.ui.fragments.SettingsFragment"
+        android:label="Impostazioni" />
+
+</navigation>

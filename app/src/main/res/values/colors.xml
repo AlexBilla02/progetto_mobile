@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Palette principale -->
+    <color name="primary">#1976D2</color>
+    <color name="primary_dark">#1565C0</color>
+    <color name="primary_light">#BBDEFB</color>
+    <color name="accent">#FF6D00</color>
+
+    <!-- Feedback budget -->
+    <color name="budget_ok">#4CAF50</color>
+    <color name="budget_warning">#FFC107</color>
+    <color name="budget_exceeded">#F44336</color>
+
+    <!-- Categorie (icone e chip) -->
+    <color name="category_food">#FF7043</color>
+    <color name="category_grocery">#66BB6A</color>
+    <color name="category_transport">#42A5F5</color>
+    <color name="category_entertainment">#AB47BC</color>
+    <color name="category_health">#EC407A</color>
+    <color name="category_tech">#26C6DA</color>
+    <color name="category_clothing">#FFA726</color>
+    <color name="category_other">#BDBDBD</color>
+
+    <!-- Superficie e sfondo -->
+    <color name="background">#F5F5F5</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#EEEEEE</color>
+    <color name="on_surface">#212121</color>
+    <color name="on_surface_secondary">#757575</color>
+</resources>

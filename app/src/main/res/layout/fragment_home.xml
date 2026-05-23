@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5">
+
+    <!-- Header card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/primary">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tv_greeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ciao!"
+                android:textColor="#BBDEFB"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_today_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Oggi hai speso: 0,00 €"
+                android:textColor="@android:color/white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <!-- Budget bar placeholder -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Budget: non impostato"
+                android:textColor="#BBDEFB"
+                android:textSize="12sp" />
+
+            <ProgressBar
+                android:id="@+id/progress_budget"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="6dp"
+                android:max="100"
+                android:progress="0"
+                android:progressTint="@android:color/white"
+                android:progressBackgroundTint="#5C9FD6" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Header lista spese recenti -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="8dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Ultime spese"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_see_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vedi tutto"
+            android:textColor="@color/primary"
+            android:textSize="14sp"
+            android:padding="4dp" />
+
+    </LinearLayout>
+
+    <!-- Lista spese o messaggio vuoto -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_recent_expenses"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingTop="4dp"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false" />
+
+    <TextView
+        android:id="@+id/tv_empty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Nessuna spesa ancora.\nPremi + per aggiungerne una!"
+        android:textColor="#9E9E9E"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+</LinearLayout>
