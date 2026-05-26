@@ -13,6 +13,7 @@ public class Expense {
     @PrimaryKey(autoGenerate = true)  // id generato automaticamente da Room
     private long id;
 
+    private String userId;
     private String name;
     private String category;   // salviamo la stringa, non l'enum direttamente
     private double amount;
@@ -21,8 +22,9 @@ public class Expense {
     private String note;
 
     // Costruttore senza id (Room lo genera da solo)
-    public Expense(String name, String category, double amount,
+    public Expense(String userId,String name, String category, double amount,
                    String currency, long date, String note) {
+        this.userId=userId;
         this.name = name;
         this.category = category;
         this.amount = amount;
@@ -32,6 +34,7 @@ public class Expense {
     }
 
     // Getters — Room ne ha bisogno per leggere i valori
+    public String getUserId() { return userId; }
     public long getId()         { return id; }
     public String getName()     { return name; }
     public String getCategory() { return category; }
@@ -41,6 +44,7 @@ public class Expense {
     public String getNote()     { return note; }
 
     // Setter per l'id — Room ne ha bisogno per scrivere l'id generato
+    public void setUserId(String userId) { this.userId = userId; }
     public void setId(long id)  { this.id = id; }
     public void setName(String name)         { this.name = name; }
     public void setCategory(String category) { this.category = category; }

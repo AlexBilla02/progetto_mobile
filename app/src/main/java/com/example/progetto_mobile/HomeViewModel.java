@@ -22,9 +22,10 @@ public class HomeViewModel extends AndroidViewModel {
     public HomeViewModel(Application application) {
         super(application);
         dao = AppDatabase.getInstance(application).expenseDao();
-        recentExpenses = dao.getRecentExpenses(5);
-        // Niente più "now" fisso — prende tutto da inizio giornata in poi
-        todayTotal = dao.getTotalFrom(getStartOfDayMillis());
+
+        String userId = UserSession.getCurrentUserId();
+        recentExpenses = dao.getRecentExpenses(userId, 5);
+        todayTotal = dao.getTotalFrom(userId, getStartOfDayMillis());
     }
 
     public LiveData<List<Expense>> getRecentExpenses() {

@@ -18,6 +18,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 public class ExpenseDetailBottomSheet extends BottomSheetDialogFragment {
 
     // Chiave per passare la spesa nel Bundle
+    public static final String ARG_EXPENSE_USER_ID = "expense_user_id";
     public static final String ARG_EXPENSE_ID       = "expense_id";
     public static final String ARG_EXPENSE_NAME     = "expense_name";
     public static final String ARG_EXPENSE_CATEGORY = "expense_category";
@@ -31,9 +32,11 @@ public class ExpenseDetailBottomSheet extends BottomSheetDialogFragment {
     private Expense expense;
 
     // Factory method — modo pulito per creare il bottom sheet con i dati
+
     public static ExpenseDetailBottomSheet newInstance(Expense expense) {
         ExpenseDetailBottomSheet sheet = new ExpenseDetailBottomSheet();
         Bundle args = new Bundle();
+        args.putString(ARG_EXPENSE_USER_ID, expense.getUserId());
         args.putLong(ARG_EXPENSE_ID,           expense.getId());
         args.putString(ARG_EXPENSE_NAME,       expense.getName());
         args.putString(ARG_EXPENSE_CATEGORY,   expense.getCategory());
@@ -63,6 +66,7 @@ public class ExpenseDetailBottomSheet extends BottomSheetDialogFragment {
         // Ricostruisce l'oggetto Expense dai parametri del Bundle
         Bundle args = requireArguments();
         expense = new Expense(
+                args.getString(ARG_EXPENSE_USER_ID),
                 args.getString(ARG_EXPENSE_NAME),
                 args.getString(ARG_EXPENSE_CATEGORY),
                 args.getDouble(ARG_EXPENSE_AMOUNT),

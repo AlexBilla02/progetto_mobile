@@ -27,11 +27,13 @@ public class HistoryViewModel extends AndroidViewModel {
         super(application);
         dao = AppDatabase.getInstance(application).expenseDao();
 
+        String userId = UserSession.getCurrentUserId();
+
         expenses = Transformations.switchMap(dateRange, range -> {
             if (range == null) {
-                return dao.getAllExpenses();
+                return dao.getAllExpenses(userId);
             } else {
-                return dao.getExpensesBetween(range[0], range[1]);
+                return dao.getExpensesBetween(userId, range[0], range[1]);
             }
         });
 

@@ -14,12 +14,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.example.progetto_mobile.data.Category;
 import com.example.progetto_mobile.data.Expense;
 import com.example.progetto_mobile.HomeViewModel;
+import com.example.progetto_mobile.UserSession;
 import com.example.progetto_mobile.databinding.BottomSheetExpenseFormBinding;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+
 public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
+    public static final String ARG_EXPENSE_USER_ID = "edit_expense_user_id";
     public static final String ARG_EXPENSE_ID       = "edit_expense_id";
     public static final String ARG_EXPENSE_NAME     = "edit_expense_name";
     public static final String ARG_EXPENSE_CATEGORY = "edit_expense_category";
@@ -53,6 +56,7 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
         if (getArguments() != null) {
             Bundle args = getArguments();
             expenseToEdit = new Expense(
+                    args.getString(ARG_EXPENSE_USER_ID),
                     args.getString(ARG_EXPENSE_NAME),
                     args.getString(ARG_EXPENSE_CATEGORY),
                     args.getDouble(ARG_EXPENSE_AMOUNT),
@@ -189,8 +193,11 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
                 viewModel.updateExpense(expenseToEdit);
             } else {
                 // Modalità inserimento — crea nuova spesa
-                Expense expense = new Expense(name, catLabel, amount, currency,
-                        selectedDate.getTimeInMillis(), note);
+                Expense expense = new Expense(
+                        UserSession.getCurrentUserId(),  // ← aggiunto
+                        name, catLabel, amount, currency,
+                        selectedDate.getTimeInMillis(), note
+                );
                 viewModel.addExpense(expense);
             }
 
@@ -224,6 +231,7 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
         AddExpenseFormBottomSheet sheet = new AddExpenseFormBottomSheet();
         Bundle args = new Bundle();
         args.putLong(ARG_EXPENSE_ID,           expense.getId());
+        args.putString(ARG_EXPENSE_USER_ID,    expense.getUserId());
         args.putString(ARG_EXPENSE_NAME,       expense.getName());
         args.putString(ARG_EXPENSE_CATEGORY,   expense.getCategory());
         args.putDouble(ARG_EXPENSE_AMOUNT,     expense.getAmount());

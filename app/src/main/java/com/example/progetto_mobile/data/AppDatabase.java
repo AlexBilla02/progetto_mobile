@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Expense.class}, version = 1, exportSchema = false)
+@Database(entities = {Expense.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     // Metodo astratto che Room implementa automaticamente
@@ -26,10 +26,11 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (instance == null) {
                     instance = Room.databaseBuilder(
-                            context.getApplicationContext(),
-                            AppDatabase.class,
-                            "spendwise_database"
-                    ).build();
+                                    context.getApplicationContext(),
+                                    AppDatabase.class,
+                                    "spendwise_database"
+                            ).fallbackToDestructiveMigration()  // ← aggiunta
+                            .build();
                 }
             }
         }
