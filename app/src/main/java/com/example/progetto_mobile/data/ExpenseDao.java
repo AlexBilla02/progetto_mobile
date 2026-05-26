@@ -36,4 +36,5 @@ public interface ExpenseDao {
     // Totale speso in un intervallo (per la home e le stats)
     @Query("SELECT SUM(amount) FROM expenses WHERE date >= :from")
     LiveData<Double> getTotalFrom(long from);
+
 }

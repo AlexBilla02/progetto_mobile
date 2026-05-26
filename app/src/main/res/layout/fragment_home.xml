@@ -11,7 +11,8 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginHorizontal="18dp"
+        android:layout_marginVertical="40dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp"
         app:cardBackgroundColor="@color/primary">
@@ -57,8 +58,8 @@
                 android:layout_marginTop="6dp"
                 android:max="100"
                 android:progress="0"
-                android:progressTint="@android:color/white"
-                android:progressBackgroundTint="#5C9FD6" />
+                android:progressBackgroundTint="#5C9FD6"
+                android:progressTint="@android:color/white" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
