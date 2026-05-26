@@ -103,6 +103,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() { return items.size(); }
+    public List<Expense> getCurrentExpenses() {
+        List<Expense> expenses = new ArrayList<>();
+        for (Object item : items) {
+            if (item instanceof Expense) {
+                expenses.add((Expense) item);
+            }
+        }
+        return expenses;
+    }
 
     // --- ViewHolder per l'intestazione del giorno ---
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
@@ -119,6 +128,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             tvDate.setText(header.getDateLabel());
             tvTotal.setText(String.format(Locale.getDefault(), "€ %.2f", header.getDayTotal()));
         }
+
+
     }
 
     // --- ViewHolder per la singola spesa (uguale a ExpenseAdapter) ---
@@ -154,5 +165,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             itemView.setOnClickListener(v -> listener.onExpenseClick(expense));
         }
+
     }
 }

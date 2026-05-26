@@ -1,16 +1,21 @@
 package com.example.progetto_mobile.ui.fragments;
 
 import android.app.DatePickerDialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.progetto_mobile.HistoryViewModel;
+import com.example.progetto_mobile.PdfExporter;
+import com.example.progetto_mobile.data.AppDatabase;
 import com.example.progetto_mobile.data.Expense;
 import com.example.progetto_mobile.databinding.FragmentHistoryBinding;
 import com.example.progetto_mobile.ui.adapters.HistoryAdapter;
@@ -23,7 +28,7 @@ public class HistoryFragment extends Fragment {
     private FragmentHistoryBinding binding;
     private HistoryViewModel viewModel;
     private HistoryAdapter adapter;
-
+    private String currentPeriodLabel = "Tutto";
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -42,6 +47,7 @@ public class HistoryFragment extends Fragment {
         setupRecyclerView();
         setupChips();
         setupCustomRange();
+        setupExportButton();
         observeExpenses();
     }
 
@@ -59,13 +65,28 @@ public class HistoryFragment extends Fragment {
             if (checkedIds.isEmpty()) return;
             int id = checkedIds.get(0);
 
-            if      (id == binding.chipAll.getId())       viewModel.setFilter(HistoryViewModel.Filter.ALL);
-            else if (id == binding.chipToday.getId())     viewModel.setFilter(HistoryViewModel.Filter.TODAY);
-            else if (id == binding.chipThisWeek.getId())  viewModel.setFilter(HistoryViewModel.Filter.THIS_WEEK);
-            else if (id == binding.chipLast7.getId())     viewModel.setFilter(HistoryViewModel.Filter.LAST_7_DAYS);
-            else if (id == binding.chipThisMonth.getId()) viewModel.setFilter(HistoryViewModel.Filter.THIS_MONTH);
-            else if (id == binding.chipLast30.getId())    viewModel.setFilter(HistoryViewModel.Filter.LAST_30_DAYS);
-            else if (id == binding.chipLast365.getId())   viewModel.setFilter(HistoryViewModel.Filter.LAST_365_DAYS);
+            if (id == binding.chipAll.getId()) {
+                viewModel.setFilter(HistoryViewModel.Filter.ALL);
+                currentPeriodLabel = "Tutto";
+            } else if (id == binding.chipToday.getId()) {
+                viewModel.setFilter(HistoryViewModel.Filter.TODAY);
+                currentPeriodLabel = "Oggi";
+            } else if (id == binding.chipThisWeek.getId()) {
+                viewModel.setFilter(HistoryViewModel.Filter.THIS_WEEK);
+                currentPeriodLabel = "Questa settimana";
+            } else if (id == binding.chipLast7.getId()) {
+                viewModel.setFilter(HistoryViewModel.Filter.LAST_7_DAYS);
+                currentPeriodLabel = "Ultimi 7 giorni";
+            } else if (id == binding.chipThisMonth.getId()) {
+                viewModel.setFilter(HistoryViewModel.Filter.THIS_MONTH);
+                currentPeriodLabel = "Questo mese";
+            } else if (id == binding.chipLast30.getId()) {
+                viewModel.setFilter(HistoryViewModel.Filter.LAST_30_DAYS);
+                currentPeriodLabel = "Ultimi 30 giorni";
+            } else if (id == binding.chipLast365.getId()) {
+                viewModel.setFilter(HistoryViewModel.Filter.LAST_365_DAYS);
+                currentPeriodLabel = "Ultimo anno";
+            }
         });
     }
 
@@ -100,10 +121,10 @@ public class HistoryFragment extends Fragment {
                     viewModel.setCustomRange(from, to.getTimeInMillis());
 
                     // Mostra le date scelte accanto al pulsante
-                    String label = android.text.format.DateFormat
-                            .format("dd/MM/yy", from) + " → " +
-                            android.text.format.DateFormat
-                                    .format("dd/MM/yy", to.getTimeInMillis());
+                    currentPeriodLabel = android.text.format.DateFormat.format("dd/MM/yy", from)
+                            + " → " +
+                            android.text.format.DateFormat.format("dd/MM/yy", to.getTimeInMillis());
+                    String label = currentPeriodLabel;
                     binding.tvCustomRange.setText(label);
                     binding.tvCustomRange.setTextColor(
                             ContextCompat.getColor(requireContext(),
@@ -124,6 +145,49 @@ public class HistoryFragment extends Fragment {
                 binding.rvHistory.setVisibility(View.VISIBLE);
                 binding.tvEmpty.setVisibility(View.GONE);
                 adapter.setExpenses(expenses);
+            }
+        });
+    }
+
+    private void setupExportButton() {
+        binding.fabExportPdf.setOnClickListener(v -> showExportConfirmation());
+    }
+
+    private void showExportConfirmation() {
+        // Recupera la lista attuale dall'adapter
+        List<Expense> currentExpenses = adapter.getCurrentExpenses();
+
+        if (currentExpenses == null || currentExpenses.isEmpty()) {
+            Toast.makeText(requireContext(),
+                    "Nessuna spesa da esportare", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Esporta PDF")
+                .setMessage("Vuoi esportare " + currentExpenses.size() +
+                        " spese del periodo \"" + currentPeriodLabel + "\" in PDF?")
+                .setPositiveButton("Esporta", (dialog, which) -> {
+                    exportToPdf(currentExpenses);
+                })
+                .setNegativeButton("Annulla", null)
+                .show();
+    }
+
+    private void exportToPdf(List<Expense> expenses) {
+        AppDatabase.executor.execute(() -> {
+            try {
+                Uri uri = PdfExporter.export(requireContext(), expenses, currentPeriodLabel);
+                requireActivity().runOnUiThread(() -> {
+                    Toast.makeText(requireContext(),
+                            "PDF generato!", Toast.LENGTH_SHORT).show();
+                    PdfExporter.share(requireContext(), uri);
+                });
+            } catch (Exception e) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(requireContext(),
+                                "Errore nella generazione del PDF", Toast.LENGTH_SHORT).show()
+                );
             }
         });
     }
