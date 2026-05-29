@@ -10,6 +10,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.example.progetto_mobile.ml.ReceiptParser;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.example.progetto_mobile.data.Category;
 import com.example.progetto_mobile.data.Expense;
@@ -30,6 +32,11 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
     public static final String ARG_EXPENSE_CURRENCY = "edit_expense_currency";
     public static final String ARG_EXPENSE_DATE     = "edit_expense_date";
     public static final String ARG_EXPENSE_NOTE     = "edit_expense_note";
+    public static final String ARG_RECEIPT_MERCHANT = "receipt_merchant";
+    public static final String ARG_RECEIPT_AMOUNT   = "receipt_amount";
+    public static final String ARG_RECEIPT_DATE     = "receipt_date";
+    private boolean isFromReceipt = false;
+
     private BottomSheetExpenseFormBinding binding;
     private HomeViewModel viewModel;
     private final Calendar selectedDate = Calendar.getInstance();
@@ -55,16 +62,23 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
 
         if (getArguments() != null) {
             Bundle args = getArguments();
-            expenseToEdit = new Expense(
-                    args.getString(ARG_EXPENSE_USER_ID),
-                    args.getString(ARG_EXPENSE_NAME),
-                    args.getString(ARG_EXPENSE_CATEGORY),
-                    args.getDouble(ARG_EXPENSE_AMOUNT),
-                    args.getString(ARG_EXPENSE_CURRENCY),
-                    args.getLong(ARG_EXPENSE_DATE),
-                    args.getString(ARG_EXPENSE_NOTE)
-            );
-            expenseToEdit.setId(args.getLong(ARG_EXPENSE_ID));
+
+            // Modalità modifica — solo se contiene ARG_EXPENSE_ID
+            if (args.containsKey(ARG_EXPENSE_ID) && args.getLong(ARG_EXPENSE_ID) != 0) {
+                expenseToEdit = new Expense(
+                        args.getString(ARG_EXPENSE_USER_ID),
+                        args.getString(ARG_EXPENSE_NAME),
+                        args.getString(ARG_EXPENSE_CATEGORY),
+                        args.getDouble(ARG_EXPENSE_AMOUNT),
+                        args.getString(ARG_EXPENSE_CURRENCY),
+                        args.getLong(ARG_EXPENSE_DATE),
+                        args.getString(ARG_EXPENSE_NOTE)
+                );
+                expenseToEdit.setId(args.getLong(ARG_EXPENSE_ID));
+            }
+
+            // Modalità receipt — solo se contiene ARG_RECEIPT_MERCHANT
+            isFromReceipt = args.containsKey(ARG_RECEIPT_MERCHANT);
         }
         setupCategoryDropdown();
         setupCurrencyDropdown();
@@ -164,12 +178,32 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void setupSaveButton() {
-        // Cambia il testo del bottone se siamo in modalità modifica
         if (expenseToEdit != null) {
+            // Modalità modifica — già esistente
             binding.btnSave.setText("Aggiorna spesa");
             binding.etName.setText(expenseToEdit.getName());
             binding.etAmount.setText(String.valueOf(expenseToEdit.getAmount()));
             binding.etNote.setText(expenseToEdit.getNote());
+
+        } else if (isFromReceipt && getArguments() != null) {
+            // Modalità pre-compilazione da scontrino
+            Bundle args = getArguments();
+            String merchant = args.getString(ARG_RECEIPT_MERCHANT, "");
+            double amount   = args.getDouble(ARG_RECEIPT_AMOUNT, 0.0);
+            long   date     = args.getLong(ARG_RECEIPT_DATE,
+                    System.currentTimeMillis());
+            android.util.Log.d("FORM_FILL", "Filling form - merchant: " + merchant + " amount: " + amount);
+
+            if (!merchant.isEmpty())
+                binding.etName.setText(merchant);
+            if (amount > 0)
+                binding.etAmount.setText(String.format(Locale.getDefault(),
+                        "%.2f", amount));
+
+            // Imposta la data estratta dallo scontrino
+            selectedDate.setTimeInMillis(date);
+            updateDateField();
+            updateTimeField();
         }
 
         binding.btnSave.setOnClickListener(v -> {
@@ -179,11 +213,11 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
             String catLabel  = binding.acvCategory.getText().toString();
             String amountStr = binding.etAmount.getText().toString().trim();
             String currency  = binding.acvCurrency.getText().toString();
-            String note      = binding.etNote.getText().toString().trim();
+            String note      = binding.etNote.getText() != null
+                    ? binding.etNote.getText().toString().trim() : "";
             double amount    = Double.parseDouble(amountStr.replace(",", "."));
 
             if (expenseToEdit != null) {
-                // Modalità modifica — aggiorna la spesa esistente
                 expenseToEdit.setName(name);
                 expenseToEdit.setCategory(catLabel);
                 expenseToEdit.setAmount(amount);
@@ -192,9 +226,8 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
                 expenseToEdit.setNote(note);
                 viewModel.updateExpense(expenseToEdit);
             } else {
-                // Modalità inserimento — crea nuova spesa
                 Expense expense = new Expense(
-                        UserSession.getCurrentUserId(),  // ← aggiunto
+                        UserSession.getCurrentUserId(),
                         name, catLabel, amount, currency,
                         selectedDate.getTimeInMillis(), note
                 );
@@ -241,6 +274,18 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
         sheet.setArguments(args);
         return sheet;
     }
+    public static AddExpenseFormBottomSheet newInstanceFromReceipt(
+            ReceiptParser.ParsedReceipt receipt) {
+        AddExpenseFormBottomSheet sheet = new AddExpenseFormBottomSheet();
+        Bundle args = new Bundle();
+        args.putString(ARG_RECEIPT_MERCHANT, receipt.merchantName);
+        args.putDouble(ARG_RECEIPT_AMOUNT,   receipt.amount);
+        args.putLong(ARG_RECEIPT_DATE,       receipt.date);
+        sheet.setArguments(args);
+        return sheet;
+    }
+
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

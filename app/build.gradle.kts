@@ -62,4 +62,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("com.google.firebase:firebase-analytics")
+
+    //ML Kit OCR
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+
 }
