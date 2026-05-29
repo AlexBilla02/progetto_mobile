@@ -1,5 +1,7 @@
 package com.example.progetto_mobile.ui.fragments;
 
+import static com.example.progetto_mobile.ui.fragments.AddExpenseBottomSheet.ARG_RECEIPT_RAW_TEXT;
+
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.progetto_mobile.BuildConfig;
+import com.example.progetto_mobile.ml.GeminiApi;
 import com.example.progetto_mobile.ml.ReceiptParser;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.example.progetto_mobile.data.Category;
@@ -42,6 +46,9 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
     private final Calendar selectedDate = Calendar.getInstance();
 
     private Expense expenseToEdit = null; // null = nuova spesa, non null = modifica
+
+    private GeminiApi geminiApi;
+    private String rawOcrText = "";
 
     @Nullable
     @Override
@@ -79,6 +86,12 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
 
             // Modalità receipt — solo se contiene ARG_RECEIPT_MERCHANT
             isFromReceipt = args.containsKey(ARG_RECEIPT_MERCHANT);
+            // Inizializza Gemini
+            geminiApi = new GeminiApi(requireContext(), BuildConfig.GEMINI_API_KEY);
+            // Recupera il testo grezzo OCR se presente
+            if (getArguments() != null && isFromReceipt) {
+                rawOcrText = getArguments().getString(ARG_RECEIPT_RAW_TEXT, "");
+            }
         }
         setupCategoryDropdown();
         setupCurrencyDropdown();
@@ -204,6 +217,8 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
             selectedDate.setTimeInMillis(date);
             updateDateField();
             updateTimeField();
+            binding.layoutAiEnhance.setVisibility(View.VISIBLE);
+            setupAiEnhanceButton();
         }
 
         binding.btnSave.setOnClickListener(v -> {
@@ -241,6 +256,91 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
         });
     }
 
+    private void setupAiEnhanceButton() {
+        binding.btnAiEnhance.setOnClickListener(v -> {
+            if (rawOcrText.isEmpty()) {
+                Toast.makeText(requireContext(),
+                        "Testo OCR non disponibile", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!geminiApi.isNetworkAvailable()) {
+                Toast.makeText(requireContext(),
+                        "Nessuna connessione internet", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Mostra stato caricamento
+            binding.btnAiEnhance.setEnabled(false);
+            binding.tvAiStatus.setVisibility(View.VISIBLE);
+            binding.tvAiStatus.setText("Analisi in corso...");
+
+            geminiApi.analyzeReceipt(rawOcrText, new GeminiApi.GeminiCallback() {
+                @Override
+                public void onSuccess(GeminiApi.GeminiResult result) {
+                    requireActivity().runOnUiThread(() -> {
+                        applyGeminiResult(result);
+                        binding.btnAiEnhance.setEnabled(true);
+                        binding.tvAiStatus.setText("Campi aggiornati con AI");
+                    });
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    requireActivity().runOnUiThread(() -> {
+                        binding.btnAiEnhance.setEnabled(true);
+                        binding.tvAiStatus.setText("Errore: " + errorMessage);
+                        Toast.makeText(requireContext(),
+                                "Gemini non disponibile", Toast.LENGTH_SHORT).show();
+                    });
+                }
+            });
+        });
+    }
+
+    private void applyGeminiResult(GeminiApi.GeminiResult result) {
+        // Aggiorna nome esercente
+        if (!result.merchantName.isEmpty()) {
+            binding.etName.setText(result.merchantName);
+        }
+
+        // Aggiorna importo
+        if (result.amount > 0) {
+            binding.etAmount.setText(
+                    String.format(Locale.getDefault(), "%.2f", result.amount));
+        }
+
+        // Aggiorna data
+        if (!result.date.isEmpty()) {
+            try {
+                java.text.SimpleDateFormat sdf =
+                        new java.text.SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                java.util.Date parsed = sdf.parse(result.date);
+                if (parsed != null) {
+                    selectedDate.setTime(parsed);
+                    // Applica l'ora se presente
+                    if (!result.time.isEmpty()) {
+                        String[] parts = result.time.split(":");
+                        if (parts.length == 2) {
+                            selectedDate.set(Calendar.HOUR_OF_DAY,
+                                    Integer.parseInt(parts[0]));
+                            selectedDate.set(Calendar.MINUTE,
+                                    Integer.parseInt(parts[1]));
+                        }
+                    }
+                    updateDateField();
+                    updateTimeField();
+                }
+            } catch (Exception e) {
+                android.util.Log.e("GEMINI", "Errore parsing data: " + e.getMessage());
+            }
+        }
+
+        // Aggiorna categoria
+        if (!result.category.isEmpty()) {
+            binding.acvCategory.setText(result.category, false);
+        }
+    }
     private boolean validateForm() {
         boolean valid = true;
 
@@ -281,6 +381,7 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
         args.putString(ARG_RECEIPT_MERCHANT, receipt.merchantName);
         args.putDouble(ARG_RECEIPT_AMOUNT,   receipt.amount);
         args.putLong(ARG_RECEIPT_DATE,       receipt.date);
+        args.putString(ARG_RECEIPT_RAW_TEXT, receipt.rawText);
         sheet.setArguments(args);
         return sheet;
     }

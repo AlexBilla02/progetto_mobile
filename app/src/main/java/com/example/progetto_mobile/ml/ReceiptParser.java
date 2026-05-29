@@ -32,8 +32,7 @@ public class ReceiptParser {
         return result;
     }
 
-    // Il nome dell'esercente è quasi sempre nelle prime righe
-    // in maiuscolo, prima dell'indirizzo
+
     private static String extractMerchant(String[] lines) {
         for (int i = 0; i < Math.min(5, lines.length); i++) {
             String line = lines[i].trim();

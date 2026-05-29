@@ -29,6 +29,8 @@ public class AddExpenseBottomSheet extends BottomSheetDialogFragment {
     private BottomSheetAddChoiceBinding binding;
     private Uri photoUri;
     private OcrProcessor ocrProcessor;
+    public static final String ARG_RECEIPT_RAW_TEXT = "receipt_raw_text";
+
 
     private final ActivityResultLauncher<String> permissionLauncher =
             registerForActivityResult(

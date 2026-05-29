@@ -1,3 +1,10 @@
+import java.util.Properties
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
@@ -15,9 +22,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties.getProperty("gemini_api_key", "")}\"")
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     buildTypes {
         release {
@@ -65,5 +74,7 @@ dependencies {
 
     //ML Kit OCR
     implementation("com.google.mlkit:text-recognition:16.0.0")
+
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
 }

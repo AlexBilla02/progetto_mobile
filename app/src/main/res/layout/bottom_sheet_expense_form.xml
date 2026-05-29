@@ -189,7 +189,37 @@
                 android:inputType="textCapSentences" />
 
         </com.google.android.material.textfield.TextInputLayout>
+        <!-- Pulsante Migliora con AI — visibile solo dopo OCR -->
+        <LinearLayout
+            android:id="@+id/layout_ai_enhance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_ai_enhance"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="Migliora con AI"
+                android:textSize="14sp"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:strokeColor="#1976D2"
+                android:textColor="#1976D2"
+                app:cornerRadius="10dp" />
+
+            <TextView
+                android:id="@+id/tv_ai_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="#9E9E9E"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
         <!-- Tasto salva -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_save"
