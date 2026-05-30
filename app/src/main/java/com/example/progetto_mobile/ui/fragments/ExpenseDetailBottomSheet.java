@@ -81,12 +81,15 @@ public class ExpenseDetailBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void populateFields() {
-        // Cerchio categoria
-        String initial = expense.getCategory().substring(0, 1).toUpperCase();
-        binding.tvDetailCategoryIcon.setText(initial);
+
         int color = ContextCompat.getColor(requireContext(),
                 Category.fromLabel(expense.getCategory()).getColorRes());
         binding.tvDetailCategoryIcon.getBackground().setTint(color);
+        binding.tvDetailCategoryIcon.setImageResource(
+                Category.fromLabel(expense.getCategory()).getIconRes());
+        binding.tvDetailCategoryIcon.setColorFilter(
+                android.graphics.Color.WHITE,
+                android.graphics.PorterDuff.Mode.SRC_IN);
 
         binding.tvDetailName.setText(expense.getName());
         binding.tvDetailCategory.setText(expense.getCategory());

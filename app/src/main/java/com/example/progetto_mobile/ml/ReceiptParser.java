@@ -15,8 +15,8 @@ public class ReceiptParser {
         public String merchantName = "";   // nome esercente
         public double amount       = 0.0;  // importo totale
         public String currency     = "EUR";
-        public long   date         = System.currentTimeMillis(); // default oggi
-        public String rawText      = "";   // testo grezzo per debug
+        public long   date         = System.currentTimeMillis();
+        public String rawText      = "";
     }
 
     public static ParsedReceipt parse(String ocrText) {
@@ -36,7 +36,7 @@ public class ReceiptParser {
     private static String extractMerchant(String[] lines) {
         for (int i = 0; i < Math.min(5, lines.length); i++) {
             String line = lines[i].trim();
-            // Salta righe troppo corte o che sembrano indirizzi/numeri
+            // Salta righe troppo corte o indirizzi/numeri
             if (line.length() < 3) continue;
             if (line.matches(".*\\d{5}.*")) continue;      // CAP
             if (line.toLowerCase().contains("via ")) continue;
@@ -50,21 +50,18 @@ public class ReceiptParser {
         return "";
     }
 
-    // Cerca il totale con pattern comuni sugli scontrini italiani
+    // Cerca totale scontrino
     private static double extractAmount(String text) {
         String[] lines = text.split("\n");
 
         // Strategia 1: cerca keyword TOTALE (anche parziale/corrotto)
-        // usando una regex fuzzy che accetta qualsiasi carattere dopo "TOT"
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim().toLowerCase();
 
-            // Matcha "totale" anche se seguito da parole corrotte
             if (line.matches(".*tot[a-z]+.*") &&
                     !line.contains("subtotale") &&
                     !line.contains("sconto")) {
 
-                // Cerca importo sulla stessa riga
                 Matcher m = Pattern.compile("(\\d{1,4}[.,]\\d{2})").matcher(lines[i]);
                 if (m.find()) {
                     return parseAmount(m.group(1));
@@ -76,7 +73,6 @@ public class ReceiptParser {
                             .matcher(lines[j]);
                     if (mNext.find()) {
                         double val = parseAmount(mNext.group(1));
-                        // Ignora percentuali IVA (es. 22,00%)
                         if (!lines[j].contains("%") && val > 0) {
                             return val;
                         }
@@ -86,7 +82,6 @@ public class ReceiptParser {
         }
 
         // Strategia 2: fallback — prende il numero che appare più volte
-        // (il totale tende a ripetersi sullo scontrino)
         Map<Double, Integer> frequency = new HashMap<>();
         Matcher mAll = Pattern.compile("\\b(\\d{1,4}[.,]\\d{2})\\b").matcher(text);
         while (mAll.find()) {
@@ -104,7 +99,6 @@ public class ReceiptParser {
     }
 
     private static long extractDate(String text) {
-        // Pattern più permissivo: accetta spazio opzionale prima del trattino
         Pattern dateTimePattern = Pattern.compile(
                 "\\b(\\d{1,2})[/\\-\\.](\\d{1,2})[/\\-\\.](\\d{2,4})" +
                         "\\s*-?\\s*(\\d{1,2}):(\\d{2})\\b");
@@ -126,7 +120,6 @@ public class ReceiptParser {
                 cal.set(year, month, day, hour, minute, 0);
                 return cal.getTimeInMillis();
             } catch (NumberFormatException e) {
-                // ignora
             }
         }
 
@@ -148,7 +141,6 @@ public class ReceiptParser {
                 cal.set(year, month, day, 0, 0, 0);
                 return cal.getTimeInMillis();
             } catch (NumberFormatException e) {
-                // ignora
             }
         }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -55,7 +56,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
 
     class ExpenseViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView tvCategoryIcon;
+        private final ImageView tvCategoryIcon;
         private final TextView tvExpenseName;
         private final TextView tvCategoryName;
         private final TextView tvAmount;
@@ -73,14 +74,15 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         void bind(Expense expense) {
             Context ctx = itemView.getContext();
 
-            // Prima lettera della categoria come icona nel cerchio
-            String initial = expense.getCategory().substring(0, 1).toUpperCase();
-            tvCategoryIcon.setText(initial);
 
             // Colore del cerchio in base alla categoria
             int color = ContextCompat.getColor(ctx, Category.fromLabel(expense.getCategory()).getColorRes());
             tvCategoryIcon.getBackground().setTint(color);
-
+            tvCategoryIcon.setImageResource(
+                    Category.fromLabel(expense.getCategory()).getIconRes());
+            tvCategoryIcon.setColorFilter(
+                    android.graphics.Color.WHITE,
+                    android.graphics.PorterDuff.Mode.SRC_IN);
             tvExpenseName.setText(expense.getName());
             tvCategoryName.setText(expense.getCategory());
             tvAmount.setText(expense.getFormattedAmount());

@@ -39,6 +39,18 @@ public enum Category {
     }
 
     // Usato per popolare il menu a tendina nel form
+    public int getIconRes() {
+        switch (this) {
+            case CIBO:          return R.drawable.ic_food;
+            case SPESA:         return R.drawable.ic_grocery;
+            case TRASPORTI:     return R.drawable.ic_transport;
+            case SVAGO:         return R.drawable.ic_hobby;
+            case SALUTE:        return R.drawable.ic_health;
+            case TECH:          return R.drawable.ic_tech;
+            case ABBIGLIAMENTO: return R.drawable.ic_clothes;
+            default:            return R.drawable.ic_other;
+        }
+    }
     public static String[] getLabels() {
         Category[] values = values();
         String[] labels = new String[values.length];
