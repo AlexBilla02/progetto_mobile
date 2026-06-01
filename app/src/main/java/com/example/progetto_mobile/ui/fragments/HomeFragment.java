@@ -9,6 +9,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.example.progetto_mobile.UserSession;
 import com.example.progetto_mobile.data.Expense;
 import com.example.progetto_mobile.ui.adapters.ExpenseAdapter;
 import com.example.progetto_mobile.HomeViewModel;
@@ -76,10 +78,54 @@ public class HomeFragment extends Fragment {
 
         viewModel.getTodayTotal().observe(getViewLifecycleOwner(), total -> {
             double amount = (total != null) ? total : 0.0;
-            binding.tvTodayTotal.setText(
-                    String.format(Locale.getDefault(), "Oggi hai speso: %.2f €", amount)
-            );
+            String baseCurrency = UserSession.getBaseCurrency(requireContext());
+            binding.tvTodayTotal.setText(String.format(
+                    Locale.getDefault(), "Oggi hai speso: %.2f %s", amount, baseCurrency));
+            updateBudgetCard(amount);
         });
+    }
+    private void updateBudgetCard(double todaySpent) {
+        double dailyBudget = viewModel.getDailyBudget(requireContext());
+        String baseCurrency = UserSession.getBaseCurrency(requireContext());
+
+        if (dailyBudget <= 0) {
+            // Budget non impostato
+            binding.tvBudgetStatus.setText("Budget giornaliero non impostato");
+            binding.progressBudget.setVisibility(View.GONE);
+            return;
+        }
+
+        binding.progressBudget.setVisibility(View.VISIBLE);
+
+        double percentage = (todaySpent / dailyBudget) * 100;
+        int progress = (int) Math.min(percentage, 100);
+        binding.progressBudget.setProgress(progress);
+
+        double remaining = dailyBudget - todaySpent;
+
+        if (percentage >= 100) {
+            binding.tvBudgetStatus.setText(String.format(Locale.getDefault(),
+                    "Hai superato il budget di %.2f %s", Math.abs(remaining), baseCurrency));
+            binding.progressBudget.setProgressTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            androidx.core.content.ContextCompat.getColor(
+                                    requireContext(), R.color.budget_exceeded)));
+
+        } else if (percentage >= 80) {
+            binding.tvBudgetStatus.setText(String.format(Locale.getDefault(),
+                    "Rimangono %.2f %s sul budget giornaliero", remaining, baseCurrency));
+            binding.progressBudget.setProgressTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            androidx.core.content.ContextCompat.getColor(
+                                    requireContext(), R.color.budget_warning)));
+
+        } else {
+            binding.tvBudgetStatus.setText(String.format(Locale.getDefault(),
+                    "Rimangono %.2f %s sul budget giornaliero", remaining, baseCurrency));
+            binding.progressBudget.setProgressTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            android.graphics.Color.WHITE));
+        }
     }
 
     private void setupSeeAll() {
@@ -93,7 +139,13 @@ public class HomeFragment extends Fragment {
                     .setSelectedItemId(R.id.historyFragment);
         });
     }
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Ricalcola il budget ogni volta che il fragment torna visibile
+        Double currentTotal = viewModel.getTodayTotal().getValue();
+        updateBudgetCard(currentTotal != null ? currentTotal : 0.0);
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();

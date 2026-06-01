@@ -1,23 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Tema base dell'app — lascia DayNight per ora -->
     <style name="Base.Theme.Progetto_mobile" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <!-- Mappa i colori semantici agli attributi del tema -->
+        <item name="android:colorBackground">@color/color_background</item>
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="colorOnSurface">@color/color_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/color_on_surface_secondary</item>
     </style>
 
     <style name="Theme.Progetto_mobile" parent="Base.Theme.Progetto_mobile" />
 
-    <!-- Tema dedicato ai BottomSheet — forza sempre il tema chiaro -->
-    <style name="Theme.Progetto_mobile.BottomSheet" parent="Theme.Material3.Light.BottomSheetDialog">
+    <!-- BottomSheet — ora segue il tema dell'app invece di forzare il chiaro -->
+    <style name="Theme.Progetto_mobile.BottomSheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
         <item name="android:backgroundDimAmount">0.5</item>
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorOnSurface">#212121</item>
-        <item name="colorOnSurfaceVariant">#757575</item>
         <item name="bottomSheetStyle">@style/Widget.Progetto_mobile.BottomSheet</item>
     </style>
 
     <style name="Widget.Progetto_mobile.BottomSheet" parent="Widget.Material3.BottomSheet">
-        <item name="android:background">@android:color/white</item>
-        <item name="backgroundTint">@android:color/white</item>
+        <item name="backgroundTint">@color/color_surface</item>
     </style>
 
 </resources>

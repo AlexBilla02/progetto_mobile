@@ -1,6 +1,8 @@
 package com.example.progetto_mobile;
 
 import android.app.Application;
+import android.content.Context;
+
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
@@ -55,5 +57,13 @@ public class HomeViewModel extends AndroidViewModel {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTimeInMillis();
+    }
+    public double getDailyBudget(Context context) {
+        double monthly = UserSession.getMonthlyBudget(context);
+        if (monthly <= 0) return 0;
+        // Divide per i giorni del mese corrente
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        int daysInMonth = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
+        return monthly / daysInMonth;
     }
 }

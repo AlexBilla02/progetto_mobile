@@ -73,6 +73,7 @@ public class Expense {
             case "USD": symbol = "$"; break;
             case "GBP": symbol = "£"; break;
             case "CHF": symbol = "Fr"; break;
+            case "JPY": symbol = "Jp"; break;
             default:    symbol = "€"; break;
         }
         return String.format(Locale.getDefault(), "%s %.2f", symbol, amount);

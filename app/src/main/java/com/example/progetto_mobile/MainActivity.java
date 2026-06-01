@@ -2,6 +2,7 @@ package com.example.progetto_mobile;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
@@ -22,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
 
         // ViewBinding: genera automaticamente riferimenti a tutti gli elementi del layout
         binding = ActivityMainBinding.inflate(getLayoutInflater());
+        if (UserSession.isDarkMode(this)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
         setContentView(binding.getRoot());
 
         setupNavigation();

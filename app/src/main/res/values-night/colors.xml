@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colori semantici TEMA SCURO — stessi nomi, valori diversi -->
+    <color name="color_background">#121212</color>
+    <color name="color_surface">#1E1E1E</color>
+    <color name="color_on_surface">#EFEFEF</color>
+    <color name="color_on_surface_secondary">#AAAAAA</color>
+    <color name="color_divider">#2C2C2C</color>
+    <color name="color_card_background">#2A2A2A</color>
+</resources>

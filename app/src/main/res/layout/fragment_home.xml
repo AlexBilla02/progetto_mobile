@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F5F5F5">
+    android:background="@color/color_background">
 
     <!-- Header card -->
     <androidx.cardview.widget.CardView
@@ -43,10 +43,10 @@
 
             <!-- Budget bar placeholder -->
             <TextView
+                android:id="@+id/tv_budget_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Budget: non impostato"
+                android:layout_marginTop="8dp"
                 android:textColor="#BBDEFB"
                 android:textSize="12sp" />
 
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Ultime spese"
-            android:textColor="#212121"
+            android:textColor="@color/color_on_surface"
             android:textSize="16sp"
             android:textStyle="bold" />
 

@@ -131,7 +131,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         void bind(DayHeader header) {
             tvDate.setText(header.getDateLabel());
-            tvTotal.setText(String.format(Locale.getDefault(), "€ %.2f", header.getDayTotal()));
+            String baseCurrency = UserSession.getBaseCurrency(itemView.getContext());
+            tvTotal.setText(String.format(Locale.getDefault(),
+                    "%.2f %s", header.getDayTotal(), baseCurrency));
         }
 
 

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@android:color/white">
+    android:background="@color/color_background">
 
     <!-- Maniglia -->
     <View
@@ -14,7 +14,7 @@
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="20dp"
-        android:background="#DDDDDD" />
+        android:background="@color/color_on_surface_secondary" />
 
     <!-- Cerchio categoria + nome -->
     <LinearLayout
@@ -43,7 +43,7 @@
                 android:id="@+id/tv_detail_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#212121"
+                android:textColor="@color/color_on_surface"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -51,7 +51,7 @@
                 android:id="@+id/tv_detail_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#9E9E9E"
+                android:textColor="@color/color_on_surface_secondary"
                 android:textSize="13sp" />
 
         </LinearLayout>
@@ -61,7 +61,7 @@
             android:id="@+id/tv_detail_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#212121"
+            android:textColor="@color/color_on_surface"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -85,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Data e ora"
-            android:textColor="#9E9E9E"
+            android:textColor="@color/color_on_surface_secondary"
             android:textSize="13sp"
             android:layout_weight="1" />
 
@@ -93,7 +93,7 @@
             android:id="@+id/tv_detail_datetime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#212121"
+            android:textColor="@color/color_on_surface_secondary"
             android:textSize="13sp" />
 
     </LinearLayout>
@@ -109,7 +109,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Valuta"
-            android:textColor="#9E9E9E"
+            android:textColor="@color/color_on_surface_secondary"
             android:textSize="13sp"
             android:layout_weight="1" />
 
@@ -117,7 +117,7 @@
             android:id="@+id/tv_detail_currency"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#212121"
+            android:textColor="@color/color_on_surface_secondary"
             android:textSize="13sp" />
 
     </LinearLayout>
@@ -135,7 +135,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nota"
-            android:textColor="#9E9E9E"
+            android:textColor="@color/color_on_surface_secondary"
             android:textSize="13sp"
             android:layout_weight="1" />
 
@@ -143,7 +143,7 @@
             android:id="@+id/tv_detail_note"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#212121"
+            android:textColor="@color/color_on_surface_secondary"
             android:textSize="13sp" />
 
     </LinearLayout>
