@@ -9,6 +9,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.example.progetto_mobile.R;
 import com.example.progetto_mobile.data.Category;
 import com.example.progetto_mobile.data.Expense;
 import com.example.progetto_mobile.HomeViewModel;
@@ -127,7 +129,10 @@ public class ExpenseDetailBottomSheet extends BottomSheetDialogFragment {
                 .setNegativeButton("Annulla", null)
                 .show();
     }
-
+    @Override
+    public int getTheme() {
+        return R.style.Theme_Progetto_mobile_BottomSheet;
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();

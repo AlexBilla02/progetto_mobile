@@ -17,6 +17,7 @@ public class Expense {
     private String name;
     private String category;   // salviamo la stringa, non l'enum direttamente
     private double amount;
+    private double amountBase;
     private String currency;
     private long date;         // timestamp in millisecondi — contiene sia data che ora
     private String note;
@@ -42,8 +43,9 @@ public class Expense {
     public String getCurrency() { return currency; }
     public long getDate()       { return date; }
     public String getNote()     { return note; }
-
+    public double getAmountBase() { return amountBase; }
     // Setter per l'id — Room ne ha bisogno per scrivere l'id generato
+
     public void setUserId(String userId) { this.userId = userId; }
     public void setId(long id)  { this.id = id; }
     public void setName(String name)         { this.name = name; }
@@ -52,6 +54,7 @@ public class Expense {
     public void setCurrency(String currency) { this.currency = currency; }
     public void setDate(long date)           { this.date = date; }
     public void setNote(String note)         { this.note = note; }
+    public void setAmountBase(double amountBase) { this.amountBase = amountBase; }
 
     // Metodi di formattazione — non sono colonne, Room li ignora
     public String getFormattedTime() {

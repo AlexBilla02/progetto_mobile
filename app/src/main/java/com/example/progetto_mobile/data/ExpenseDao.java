@@ -34,7 +34,9 @@ public interface ExpenseDao {
     LiveData<List<Expense>> getExpensesBetween(String userId, long from, long to);
 
     // Totale speso in un intervallo (per la home e le stats)
-    @Query("SELECT SUM(amount) FROM expenses WHERE userId = :userId AND date >= :from")
+    @Query("SELECT SUM(amountBase) FROM expenses WHERE userId = :userId AND date >= :from")
     LiveData<Double> getTotalFrom(String userId, long from);
+    @Query("SELECT SUM(amountBase) FROM expenses WHERE userId = :userId AND date BETWEEN :from AND :to")
+    LiveData<Double> getTotalBetween(String userId, long from, long to);
 
 }

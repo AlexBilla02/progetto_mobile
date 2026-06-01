@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.progetto_mobile.BuildConfig;
+import com.example.progetto_mobile.ExchangeRateManager;
+import com.example.progetto_mobile.R;
 import com.example.progetto_mobile.ml.GeminiApi;
 import com.example.progetto_mobile.ml.ReceiptParser;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -22,6 +24,9 @@ import com.example.progetto_mobile.data.Expense;
 import com.example.progetto_mobile.HomeViewModel;
 import com.example.progetto_mobile.UserSession;
 import com.example.progetto_mobile.databinding.BottomSheetExpenseFormBinding;
+
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -102,7 +107,9 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
 
     private void setupCategoryDropdown() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                requireContext(),
+                new androidx.appcompat.view.ContextThemeWrapper(
+                        requireContext(),
+                        com.google.android.material.R.style.Theme_Material3_Light),
                 android.R.layout.simple_dropdown_item_1line,
                 Category.getLabels()
         );
@@ -118,7 +125,9 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
     private void setupCurrencyDropdown() {
         String[] currencies = {"EUR", "USD", "GBP", "CHF", "JPY"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                requireContext(),
+                new androidx.appcompat.view.ContextThemeWrapper(
+                        requireContext(),
+                        com.google.android.material.R.style.Theme_Material3_Light),
                 android.R.layout.simple_dropdown_item_1line,
                 currencies
         );
@@ -192,28 +201,22 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
 
     private void setupSaveButton() {
         if (expenseToEdit != null) {
-            // Modalità modifica — già esistente
             binding.btnSave.setText("Aggiorna spesa");
             binding.etName.setText(expenseToEdit.getName());
             binding.etAmount.setText(String.valueOf(expenseToEdit.getAmount()));
             binding.etNote.setText(expenseToEdit.getNote());
 
         } else if (isFromReceipt && getArguments() != null) {
-            // Modalità pre-compilazione da scontrino
             Bundle args = getArguments();
             String merchant = args.getString(ARG_RECEIPT_MERCHANT, "");
             double amount   = args.getDouble(ARG_RECEIPT_AMOUNT, 0.0);
-            long   date     = args.getLong(ARG_RECEIPT_DATE,
-                    System.currentTimeMillis());
-            android.util.Log.d("FORM_FILL", "Filling form - merchant: " + merchant + " amount: " + amount);
+            long   date     = args.getLong(ARG_RECEIPT_DATE, System.currentTimeMillis());
 
             if (!merchant.isEmpty())
                 binding.etName.setText(merchant);
             if (amount > 0)
-                binding.etAmount.setText(String.format(Locale.getDefault(),
-                        "%.2f", amount));
+                binding.etAmount.setText(String.format(Locale.getDefault(), "%.2f", amount));
 
-            // Imposta la data estratta dallo scontrino
             selectedDate.setTimeInMillis(date);
             updateDateField();
             updateTimeField();
@@ -231,22 +234,66 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
             String note      = binding.etNote.getText() != null
                     ? binding.etNote.getText().toString().trim() : "";
             double amount    = Double.parseDouble(amountStr.replace(",", "."));
+            String baseCurrency = UserSession.getBaseCurrency(requireContext());
 
             if (expenseToEdit != null) {
+                // Modalità modifica
                 expenseToEdit.setName(name);
                 expenseToEdit.setCategory(catLabel);
                 expenseToEdit.setAmount(amount);
                 expenseToEdit.setCurrency(currency);
                 expenseToEdit.setDate(selectedDate.getTimeInMillis());
                 expenseToEdit.setNote(note);
-                viewModel.updateExpense(expenseToEdit);
+
+                if (currency.equals(baseCurrency)) {
+                    expenseToEdit.setAmountBase(amount);
+                    viewModel.updateExpense(expenseToEdit);
+                } else {
+                    ExchangeRateManager.getInstance(requireContext())
+                            .getRates(new ExchangeRateManager.RatesCallback() {
+                                @Override
+                                public void onRatesReady(JSONObject rates) {
+                                    double base = ExchangeRateManager.convertToBase(
+                                            amount, currency, baseCurrency, rates);
+                                    expenseToEdit.setAmountBase(base);
+                                    viewModel.updateExpense(expenseToEdit);
+                                }
+                                @Override
+                                public void onFailure() {
+                                    expenseToEdit.setAmountBase(amount);
+                                    viewModel.updateExpense(expenseToEdit);
+                                }
+                            });
+                }
+
             } else {
+                // Modalità inserimento
                 Expense expense = new Expense(
                         UserSession.getCurrentUserId(),
                         name, catLabel, amount, currency,
                         selectedDate.getTimeInMillis(), note
                 );
-                viewModel.addExpense(expense);
+
+                if (currency.equals(baseCurrency)) {
+                    expense.setAmountBase(amount);
+                    viewModel.addExpense(expense);
+                } else {
+                    ExchangeRateManager.getInstance(requireContext())
+                            .getRates(new ExchangeRateManager.RatesCallback() {
+                                @Override
+                                public void onRatesReady(JSONObject rates) {
+                                    double base = ExchangeRateManager.convertToBase(
+                                            amount, currency, baseCurrency, rates);
+                                    expense.setAmountBase(base);
+                                    viewModel.addExpense(expense);
+                                }
+                                @Override
+                                public void onFailure() {
+                                    expense.setAmountBase(amount);
+                                    viewModel.addExpense(expense);
+                                }
+                            });
+                }
             }
 
             Toast.makeText(requireContext(),
@@ -386,7 +433,10 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
         return sheet;
     }
 
-
+    @Override
+    public int getTheme() {
+        return R.style.Theme_Progetto_mobile_BottomSheet;
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();

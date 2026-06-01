@@ -47,7 +47,7 @@ public class PdfExporter {
         int y = MARGIN + 10;
 
         // Titolo
-        canvas.drawText("SpendWise — Report spese", MARGIN, y, paintTitle);
+        canvas.drawText("Report spese", MARGIN, y, paintTitle);
         y += 28;
 
         // Periodo e data generazione

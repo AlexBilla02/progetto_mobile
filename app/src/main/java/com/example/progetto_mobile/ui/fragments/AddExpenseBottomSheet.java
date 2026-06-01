@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
+import com.example.progetto_mobile.R;
 import com.example.progetto_mobile.databinding.BottomSheetAddChoiceBinding;
 import com.example.progetto_mobile.ml.OcrProcessor;
 import com.example.progetto_mobile.ml.ReceiptParser;
@@ -143,7 +145,10 @@ public class AddExpenseBottomSheet extends BottomSheetDialogFragment {
             }
         });
     }
-
+    @Override
+    public int getTheme() {
+        return R.style.Theme_Progetto_mobile_BottomSheet;
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();

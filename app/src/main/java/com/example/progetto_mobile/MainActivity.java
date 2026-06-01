@@ -8,6 +8,8 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.progetto_mobile.databinding.ActivityMainBinding;
 import com.example.progetto_mobile.ui.fragments.AddExpenseBottomSheet;
 
+import org.json.JSONObject;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,6 +26,20 @@ public class MainActivity extends AppCompatActivity {
 
         setupNavigation();
         setupFab();
+        ExchangeRateManager.getInstance(this).getRates(
+                new ExchangeRateManager.RatesCallback() {
+                    @Override
+                    public void onRatesReady(JSONObject rates) {
+                        // Tassi pronti in cache — niente da fare
+                        android.util.Log.d("ExchangeRate", "Tassi caricati");
+                    }
+                    @Override
+                    public void onFailure() {
+                        // Nessun internet — userà la cache precedente se disponibile
+                        android.util.Log.d("ExchangeRate", "Tassi non disponibili");
+                    }
+                }
+        );
     }
 
     private void setupNavigation() {

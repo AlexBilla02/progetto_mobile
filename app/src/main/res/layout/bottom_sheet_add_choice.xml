@@ -34,7 +34,7 @@
         android:textSize="15sp"
         app:cornerRadius="12dp" />
 
-    <!-- Pulsante fotocamera (disabilitato per ora) -->
+    <!-- Pulsante fotocamera -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_camera"
         android:layout_width="match_parent"

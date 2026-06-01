@@ -9,10 +9,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.progetto_mobile.ExchangeRateManager;
 import com.example.progetto_mobile.R;
+import com.example.progetto_mobile.UserSession;
 import com.example.progetto_mobile.data.Category;
 import com.example.progetto_mobile.data.DayHeader;
 import com.example.progetto_mobile.data.Expense;
+
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,9 +54,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     // Raggruppa le spese per giorno e costruisce la lista mista
     private List<Object> groupByDay(List<Expense> expenses) {
-        // LinkedHashMap mantiene l'ordine di inserimento
         Map<String, List<Expense>> grouped = new LinkedHashMap<>();
-
         SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
         for (Expense expense : expenses) {
@@ -61,13 +65,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             grouped.get(dayKey).add(expense);
         }
 
-        // Costruisce la lista finale: header + spese per ogni giorno
         List<Object> result = new ArrayList<>();
         for (Map.Entry<String, List<Expense>> entry : grouped.entrySet()) {
-            // Calcola il totale del giorno
             double dayTotal = 0;
             for (Expense e : entry.getValue()) {
-                dayTotal += e.getAmount();
+                // Se amountBase è 0 (spese vecchie), usa amount come fallback
+                double base = e.getAmountBase() > 0 ? e.getAmountBase() : e.getAmount();
+                dayTotal += base;
             }
             result.add(new DayHeader(entry.getKey(), dayTotal));
             result.addAll(entry.getValue());
@@ -139,6 +143,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private final TextView tvExpenseName;
         private final TextView tvCategoryName;
         private final TextView tvAmount;
+        private final TextView tvAmountConverted;
+
         private final TextView tvDatetime;
 
         ExpenseViewHolder(@NonNull View itemView) {
@@ -147,11 +153,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             tvExpenseName  = itemView.findViewById(R.id.tv_expense_name);
             tvCategoryName = itemView.findViewById(R.id.tv_category_name);
             tvAmount       = itemView.findViewById(R.id.tv_amount);
+            tvAmountConverted = itemView.findViewById(R.id.tv_amount_converted);
             tvDatetime     = itemView.findViewById(R.id.tv_datetime);
         }
 
         void bind(Expense expense) {
             Context ctx = itemView.getContext();
+            String baseCurrency = UserSession.getBaseCurrency(ctx); // ← dichiarato qui
+
 
 
             int color = ContextCompat.getColor(ctx,
@@ -168,6 +177,47 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             tvCategoryName.setText(expense.getCategory());
             tvAmount.setText(expense.getFormattedAmount());
             tvDatetime.setText(expense.getFormattedDateTime());
+
+            if (!expense.getCurrency().equals(baseCurrency)) {
+                ExchangeRateManager manager = ExchangeRateManager.getInstance(ctx);
+                if (manager.hasCache()) {
+                    double base = ExchangeRateManager.convertToBase(
+                            expense.getAmount(),
+                            expense.getCurrency(),
+                            baseCurrency,
+                            manager.getCachedRates());
+                    tvAmountConverted.setText(String.format(
+                            Locale.getDefault(), "≈ %.2f %s", base, baseCurrency));
+                    tvAmountConverted.setVisibility(View.VISIBLE);
+                } else {
+                    manager.getRates(new ExchangeRateManager.RatesCallback() {
+                        @Override
+                        public void onRatesReady(JSONObject rates) {
+                            double base = ExchangeRateManager.convertToBase(
+                                    expense.getAmount(),
+                                    expense.getCurrency(),
+                                    baseCurrency,
+                                    rates);
+                            new android.os.Handler(
+                                    android.os.Looper.getMainLooper()).post(() -> {
+                                tvAmountConverted.setText(String.format(
+                                        Locale.getDefault(),
+                                        "≈ %.2f %s", base, baseCurrency));
+                                tvAmountConverted.setVisibility(View.VISIBLE);
+                            });
+                        }
+
+                        @Override
+                        public void onFailure() {
+                            new android.os.Handler(
+                                    android.os.Looper.getMainLooper()).post(() ->
+                                    tvAmountConverted.setVisibility(View.GONE));
+                        }
+                    });
+                }
+            } else {
+                tvAmountConverted.setVisibility(View.GONE);
+            }
 
             itemView.setOnClickListener(v -> listener.onExpenseClick(expense));
         }

@@ -9,13 +9,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.example.progetto_mobile.ExchangeRateManager;
 import com.example.progetto_mobile.R;
+import com.example.progetto_mobile.UserSession;
 import com.example.progetto_mobile.data.Category;
 import com.example.progetto_mobile.data.Expense;
-
+import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder> {
 
@@ -60,33 +62,79 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         private final TextView tvExpenseName;
         private final TextView tvCategoryName;
         private final TextView tvAmount;
+        private final TextView tvAmountConverted;
         private final TextView tvDatetime;
 
         ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvCategoryIcon = itemView.findViewById(R.id.tv_category_icon);
-            tvExpenseName  = itemView.findViewById(R.id.tv_expense_name);
-            tvCategoryName = itemView.findViewById(R.id.tv_category_name);
-            tvAmount       = itemView.findViewById(R.id.tv_amount);
-            tvDatetime         = itemView.findViewById(R.id.tv_datetime);
+            tvCategoryIcon    = itemView.findViewById(R.id.tv_category_icon);
+            tvExpenseName     = itemView.findViewById(R.id.tv_expense_name);
+            tvCategoryName    = itemView.findViewById(R.id.tv_category_name);
+            tvAmount          = itemView.findViewById(R.id.tv_amount);
+            tvAmountConverted = itemView.findViewById(R.id.tv_amount_converted);
+            tvDatetime        = itemView.findViewById(R.id.tv_datetime);
         }
 
         void bind(Expense expense) {
             Context ctx = itemView.getContext();
+            String baseCurrency = UserSession.getBaseCurrency(ctx);
 
-
-            // Colore del cerchio in base alla categoria
-            int color = ContextCompat.getColor(ctx, Category.fromLabel(expense.getCategory()).getColorRes());
+            // Icona e colore categoria
+            int color = ContextCompat.getColor(ctx,
+                    Category.fromLabel(expense.getCategory()).getColorRes());
             tvCategoryIcon.getBackground().setTint(color);
             tvCategoryIcon.setImageResource(
                     Category.fromLabel(expense.getCategory()).getIconRes());
             tvCategoryIcon.setColorFilter(
                     android.graphics.Color.WHITE,
                     android.graphics.PorterDuff.Mode.SRC_IN);
+
             tvExpenseName.setText(expense.getName());
             tvCategoryName.setText(expense.getCategory());
             tvAmount.setText(expense.getFormattedAmount());
             tvDatetime.setText(expense.getFormattedDateTime());
+
+            // Conversione valuta — mostra solo se diversa dalla valuta base
+            if (!expense.getCurrency().equals(baseCurrency)) {
+                ExchangeRateManager manager = ExchangeRateManager.getInstance(ctx);
+                if (manager.hasCache()) {
+                    double base = ExchangeRateManager.convertToBase(
+                            expense.getAmount(),
+                            expense.getCurrency(),
+                            baseCurrency,
+                            manager.getCachedRates());
+                    tvAmountConverted.setText(String.format(
+                            Locale.getDefault(), "≈ %.2f %s", base, baseCurrency));
+                    tvAmountConverted.setVisibility(View.VISIBLE);
+                } else {
+                    manager.getRates(new ExchangeRateManager.RatesCallback() {
+                        @Override
+                        public void onRatesReady(JSONObject rates) {
+                            double base = ExchangeRateManager.convertToBase(
+                                    expense.getAmount(),
+                                    expense.getCurrency(),
+                                    baseCurrency,
+                                    rates);
+                            new android.os.Handler(
+                                    android.os.Looper.getMainLooper()).post(() -> {
+                                tvAmountConverted.setText(String.format(
+                                        Locale.getDefault(),
+                                        "≈ %.2f %s", base, baseCurrency));
+                                tvAmountConverted.setVisibility(View.VISIBLE);
+                            });
+                        }
+
+                        @Override
+                        public void onFailure() {
+                            new android.os.Handler(
+                                    android.os.Looper.getMainLooper()).post(() ->
+                                    tvAmountConverted.setVisibility(View.GONE));
+                        }
+                    });
+                }
+            } else {
+                tvAmountConverted.setVisibility(View.GONE);
+            }
 
             itemView.setOnClickListener(v -> listener.onExpenseClick(expense));
             itemView.setOnLongClickListener(v -> {
