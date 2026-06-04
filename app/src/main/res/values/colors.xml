@@ -5,6 +5,7 @@
     <color name="primary_dark">#1565C0</color>
     <color name="primary_light">#BBDEFB</color>
     <color name="accent">#FF6D00</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
 
     <!-- Feedback budget — non cambiano -->
     <color name="budget_ok">#4CAF50</color>

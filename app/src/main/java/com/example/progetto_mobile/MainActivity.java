@@ -51,12 +51,20 @@ public class MainActivity extends AppCompatActivity {
     private void setupNavigation() {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
-
         navController = navHostFragment.getNavController();
-
-        // Collega la BottomNavigation al NavController automaticamente
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
+
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            int id = destination.getId();
+            if (id == R.id.homeFragment || id == R.id.historyFragment) {
+                showFab();
+            } else {
+                hideFab();
+            }
+        });
     }
+    private void showFab() { binding.fabAddExpense.show(); }
+    private void hideFab() { binding.fabAddExpense.hide(); }
 
     private void setupFab() {
         binding.fabAddExpense.setOnClickListener(v -> {
