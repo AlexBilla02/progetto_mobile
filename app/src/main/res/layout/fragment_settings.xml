@@ -97,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="16dp"
-                    android:text="Modifica profilo"
+                    android:text="@string/modify_profile"
                     android:textColor="@color/color_on_surface"
                     android:textSize="15sp" />
 
@@ -135,7 +135,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Budget mensile"
+                        android:text="@string/budget"
                         android:textColor="@color/color_on_surface"
                         android:textSize="15sp" />
 
@@ -181,7 +181,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Valuta principale"
+                        android:text="@string/main_currency"
                         android:textColor="@color/color_on_surface"
                         android:textSize="15sp" />
 
@@ -220,7 +220,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="16dp"
-                    android:text="Tema scuro"
+                    android:text="@string/theme"
                     android:textColor="@color/color_on_surface"
                     android:textSize="15sp" />
 
@@ -239,7 +239,7 @@
         android:id="@+id/btn_logout"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:text="Esci"
+        android:text="@string/logout"
         android:textColor="#F44336"
         style="@style/Widget.Material3.Button.OutlinedButton"
         app:strokeColor="#F44336"

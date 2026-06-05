@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import com.example.progetto_mobile.AuthActivity;
+import com.example.progetto_mobile.R;
 import com.example.progetto_mobile.UserSession;
 import com.example.progetto_mobile.databinding.FragmentSettingsBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -102,20 +103,20 @@ public class SettingsFragment extends Fragment {
         input.setPadding(48, 32, 48, 32);
 
         new AlertDialog.Builder(requireContext())
-                .setTitle("Budget mensile")
-                .setMessage("Inserisci il tuo budget mensile in " + baseCurrency)
+                .setTitle(getString(R.string.budget))
+                .setMessage(getString(R.string.add_budget) + baseCurrency)
                 .setView(input)
-                .setPositiveButton("Salva", (dialog, which) -> {
+                .setPositiveButton(R.string.save_budget, (dialog, which) -> {
                     String val = input.getText().toString().trim();
                     if (!val.isEmpty()) {
                         double budget = Double.parseDouble(val.replace(",", "."));
                         UserSession.setMonthlyBudget(requireContext(), budget);
                         updateBudgetLabel();
                         Toast.makeText(requireContext(),
-                                "Budget salvato", Toast.LENGTH_SHORT).show();
+                                R.string.budget_saved, Toast.LENGTH_SHORT).show();
                     }
                 })
-                .setNegativeButton("Annulla", null)
+                .setNegativeButton(R.string.annulla, null)
                 .show();
     }
 
@@ -124,9 +125,9 @@ public class SettingsFragment extends Fragment {
         String baseCurrency = UserSession.getBaseCurrency(requireContext());
         if (budget > 0) {
             binding.tvBudgetValue.setText(String.format(
-                    Locale.getDefault(), "%.2f %s / mese", budget, baseCurrency));
+                    Locale.getDefault(), getString(R.string.monthly_budget), budget, baseCurrency));
         } else {
-            binding.tvBudgetValue.setText("Non impostato");
+            binding.tvBudgetValue.setText(R.string.not_set);
         }
     }
     private void setupCurrency() {
@@ -148,19 +149,19 @@ public class SettingsFragment extends Fragment {
         }
 
         new AlertDialog.Builder(requireContext())
-                .setTitle("Valuta principale")
+                .setTitle(R.string.main_currency)
                 .setSingleChoiceItems(currencies, currentIndex, null)
-                .setPositiveButton("Salva", (dialog, which) -> {
+                .setPositiveButton(R.string.save_budget, (dialog, which) -> {
                     int selected = ((AlertDialog) dialog).getListView()
                             .getCheckedItemPosition();
                     String newCurrency = currencies[selected];
                     UserSession.setBaseCurrency(requireContext(), newCurrency);
                     updateCurrencyLabel();
                     Toast.makeText(requireContext(),
-                            "Valuta impostata su " + newCurrency,
+                            getString(R.string.currency_set) + newCurrency,
                             Toast.LENGTH_SHORT).show();
                 })
-                .setNegativeButton("Annulla", null)
+                .setNegativeButton(R.string.annulla, null)
                 .show();
     }
 
@@ -185,16 +186,16 @@ public class SettingsFragment extends Fragment {
     private void setupLogout() {
         binding.btnLogout.setOnClickListener(v -> {
             new AlertDialog.Builder(requireContext())
-                    .setTitle("Esci")
-                    .setMessage("Vuoi disconnetterti?")
-                    .setPositiveButton("Esci", (dialog, which) -> {
+                    .setTitle(R.string.logout)
+                    .setMessage(R.string.ask_logout)
+                    .setPositiveButton(R.string.logout, (dialog, which) -> {
                         FirebaseAuth.getInstance().signOut();
                         Intent intent = new Intent(requireActivity(), AuthActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                                 Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     })
-                    .setNegativeButton("Annulla", null)
+                    .setNegativeButton(R.string.annulla, null)
                     .show();
         });
     }

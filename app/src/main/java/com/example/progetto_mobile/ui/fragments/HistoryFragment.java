@@ -10,11 +10,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.progetto_mobile.HistoryViewModel;
 import com.example.progetto_mobile.PdfExporter;
+import com.example.progetto_mobile.R;
 import com.example.progetto_mobile.data.AppDatabase;
 import com.example.progetto_mobile.data.Expense;
 import com.example.progetto_mobile.databinding.FragmentHistoryBinding;
@@ -159,18 +161,18 @@ public class HistoryFragment extends Fragment {
 
         if (currentExpenses == null || currentExpenses.isEmpty()) {
             Toast.makeText(requireContext(),
-                    "Nessuna spesa da esportare", Toast.LENGTH_SHORT).show();
+                    R.string.no_expenses_export, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Esporta PDF")
-                .setMessage("Vuoi esportare " + currentExpenses.size() +
-                        " spese del periodo \"" + currentPeriodLabel + "\" in PDF?")
-                .setPositiveButton("Esporta", (dialog, which) -> {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.export)
+                .setMessage(getString(R.string.question_export) + currentExpenses.size() +
+                        getString(R.string.expenses_in_range) + currentPeriodLabel + "\" in PDF?")
+                .setPositiveButton(getString(R.string.export_pdf), (dialog, which) -> {
                     exportToPdf(currentExpenses);
                 })
-                .setNegativeButton("Annulla", null)
+                .setNegativeButton(R.string.annulla, null)
                 .show();
     }
 
@@ -180,13 +182,13 @@ public class HistoryFragment extends Fragment {
                 Uri uri = PdfExporter.export(requireContext(), expenses, currentPeriodLabel);
                 requireActivity().runOnUiThread(() -> {
                     Toast.makeText(requireContext(),
-                            "PDF generato!", Toast.LENGTH_SHORT).show();
+                            R.string.pdf_created, Toast.LENGTH_SHORT).show();
                     PdfExporter.share(requireContext(), uri);
                 });
             } catch (Exception e) {
                 requireActivity().runOnUiThread(() ->
                         Toast.makeText(requireContext(),
-                                "Errore nella generazione del PDF", Toast.LENGTH_SHORT).show()
+                                R.string.error_generation, Toast.LENGTH_SHORT).show()
                 );
             }
         });

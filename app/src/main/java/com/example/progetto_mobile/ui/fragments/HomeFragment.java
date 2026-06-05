@@ -56,8 +56,9 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onExpenseLongClick(Expense expense) {
-                // Puoi lasciarlo vuoto o fare la stessa cosa del click
+
             }
+
         });
 
         binding.rvRecentExpenses.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -80,7 +81,7 @@ public class HomeFragment extends Fragment {
             double amount = (total != null) ? total : 0.0;
             String baseCurrency = UserSession.getBaseCurrency(requireContext());
             binding.tvTodayTotal.setText(String.format(
-                    Locale.getDefault(), "Oggi hai speso: %.2f %s", amount, baseCurrency));
+                    Locale.getDefault(), getString(R.string.today_you_spent), amount, baseCurrency));
             updateBudgetCard(amount);
         });
     }
@@ -90,7 +91,7 @@ public class HomeFragment extends Fragment {
 
         if (dailyBudget <= 0) {
             // Budget non impostato
-            binding.tvBudgetStatus.setText("Budget giornaliero non impostato");
+            binding.tvBudgetStatus.setText(R.string.no_budget);
             binding.progressBudget.setVisibility(View.GONE);
             return;
         }
@@ -105,7 +106,7 @@ public class HomeFragment extends Fragment {
 
         if (percentage >= 100) {
             binding.tvBudgetStatus.setText(String.format(Locale.getDefault(),
-                    "Hai superato il budget di %.2f %s", Math.abs(remaining), baseCurrency));
+                    getString(R.string.budget_reached), Math.abs(remaining), baseCurrency));
             binding.progressBudget.setProgressTintList(
                     android.content.res.ColorStateList.valueOf(
                             androidx.core.content.ContextCompat.getColor(
@@ -113,7 +114,7 @@ public class HomeFragment extends Fragment {
 
         } else if (percentage >= 80) {
             binding.tvBudgetStatus.setText(String.format(Locale.getDefault(),
-                    "Rimangono %.2f %s sul budget giornaliero", remaining, baseCurrency));
+                    getString(R.string.budget_remaining), remaining, baseCurrency));
             binding.progressBudget.setProgressTintList(
                     android.content.res.ColorStateList.valueOf(
                             androidx.core.content.ContextCompat.getColor(
@@ -121,7 +122,7 @@ public class HomeFragment extends Fragment {
 
         } else {
             binding.tvBudgetStatus.setText(String.format(Locale.getDefault(),
-                    "Rimangono %.2f %s sul budget giornaliero", remaining, baseCurrency));
+                    getString(R.string.budget_remaining), remaining, baseCurrency));
             binding.progressBudget.setProgressTintList(
                     android.content.res.ColorStateList.valueOf(
                             android.graphics.Color.WHITE));

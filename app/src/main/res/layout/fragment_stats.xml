@@ -29,7 +29,7 @@
                 android:layout_height="40dp"
                 android:src="@drawable/ic_arrow_back"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Mese precedente"
+                android:contentDescription="@string/last_month"
                 app:tint="@color/primary" />
 
             <TextView
@@ -48,7 +48,7 @@
                 android:layout_height="40dp"
                 android:src="@drawable/ic_arrow_forward"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Mese successivo"
+                android:contentDescription="@string/next_month"
                 app:tint="@color/primary" />
 
         </LinearLayout>
@@ -71,7 +71,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Budget mensile"
+                    android:text="@string/budget"
                     android:textColor="@color/color_on_surface"
                     android:textStyle="bold"
                     android:textSize="15sp"
@@ -113,7 +113,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Budget non impostato — configuralo nelle impostazioni"
+                    android:text="@string/no_budget"
                     android:textColor="@color/color_on_surface_secondary"
                     android:textSize="12sp"
                     android:visibility="gone" />
@@ -139,7 +139,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Spese per categoria"
+                    android:text="@string/category_expenses"
                     android:textColor="@color/color_on_surface"
                     android:textStyle="bold"
                     android:textSize="15sp"
@@ -155,7 +155,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:gravity="center"
-                    android:text="Nessuna spesa in questo mese"
+                    android:text="@string/no_expenses_month"
                     android:textColor="@color/color_on_surface_secondary"
                     android:textSize="13sp"
                     android:visibility="gone" />
@@ -182,7 +182,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Andamento giornaliero"
+                    android:text="@string/daily_stats"
                     android:textColor="@color/color_on_surface"
                     android:textStyle="bold"
                     android:textSize="15sp"
@@ -198,7 +198,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:gravity="center"
-                    android:text="Nessuna spesa in questo mese"
+                    android:text="@string/no_expenses_month"
                     android:textColor="@color/color_on_surface_secondary"
                     android:textSize="13sp"
                     android:visibility="gone" />

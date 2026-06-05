@@ -176,15 +176,15 @@ public class StatsFragment extends Fragment {
 
         binding.progressMonthly.setProgress(progress);
         binding.tvSpent.setText(String.format(Locale.getDefault(),
-                "Spesi: %.2f %s", spent, baseCurrency));
+                getString(R.string.spent), spent, baseCurrency));
 
         double remaining = budget - spent;
         if (remaining >= 0) {
             binding.tvBudgetRemaining.setText(String.format(Locale.getDefault(),
-                    "Rimangono: %.2f %s", remaining, baseCurrency));
+                    getString(R.string.remaining), remaining, baseCurrency));
         } else {
             binding.tvBudgetRemaining.setText(String.format(Locale.getDefault(),
-                    "Superato di: %.2f %s", Math.abs(remaining), baseCurrency));
+                    getString(R.string.exceed), Math.abs(remaining), baseCurrency));
         }
 
         // Colore progress bar

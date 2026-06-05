@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:text="Aggiungi spesa"
+        android:text="@string/add_expense"
         android:textColor="@color/color_on_surface"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginBottom="12dp"
-        android:text="Inserisci manualmente"
+        android:text="@string/add_manually"
         android:textSize="15sp"
         app:cornerRadius="12dp" />
 
@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginBottom="8dp"
-        android:text="Scansiona scontrino"
+        android:text="@string/scan_receipt"
         android:textSize="15sp"
         style="@style/Widget.Material3.Button.OutlinedButton"
         app:cornerRadius="12dp" />
