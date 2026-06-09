@@ -7,22 +7,21 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-@Entity(tableName = "expenses")  // questa classe = tabella "expenses"
+@Entity(tableName = "expenses")
 public class Expense {
 
-    @PrimaryKey(autoGenerate = true)  // id generato automaticamente da Room
+    @PrimaryKey(autoGenerate = true)
     private long id;
 
     private String userId;
     private String name;
-    private String category;   // salviamo la stringa, non l'enum direttamente
+    private String category;
     private double amount;
     private double amountBase;
     private String currency;
-    private long date;         // timestamp in millisecondi — contiene sia data che ora
+    private long date;
     private String note;
 
-    // Costruttore senza id (Room lo genera da solo)
     public Expense(String userId,String name, String category, double amount,
                    String currency, long date, String note) {
         this.userId=userId;
@@ -34,7 +33,7 @@ public class Expense {
         this.note = note;
     }
 
-    // Getters — Room ne ha bisogno per leggere i valori
+    //metodi getters
     public String getUserId() { return userId; }
     public long getId()         { return id; }
     public String getName()     { return name; }
@@ -44,8 +43,8 @@ public class Expense {
     public long getDate()       { return date; }
     public String getNote()     { return note; }
     public double getAmountBase() { return amountBase; }
-    // Setter per l'id — Room ne ha bisogno per scrivere l'id generato
 
+    //metodi setters
     public void setUserId(String userId) { this.userId = userId; }
     public void setId(long id)  { this.id = id; }
     public void setName(String name)         { this.name = name; }
@@ -56,7 +55,6 @@ public class Expense {
     public void setNote(String note)         { this.note = note; }
     public void setAmountBase(double amountBase) { this.amountBase = amountBase; }
 
-    // Metodi di formattazione — non sono colonne, Room li ignora
     public String getFormattedTime() {
         return new SimpleDateFormat("HH:mm", Locale.getDefault())
                 .format(new Date(date));
@@ -83,7 +81,6 @@ public class Expense {
                 .format(new Date(date));
     }
 
-    // Metodo comodo per ottenere l'enum Category dalla stringa salvata
     public Category getCategoryEnum() {
         return Category.fromLabel(category);
     }

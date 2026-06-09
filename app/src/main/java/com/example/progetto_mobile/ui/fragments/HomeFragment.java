@@ -49,7 +49,6 @@ public class HomeFragment extends Fragment {
         adapter = new ExpenseAdapter(new ExpenseAdapter.OnExpenseClickListener() {
             @Override
             public void onExpenseClick(Expense expense) {
-                // Apre il detail bottom sheet
                 ExpenseDetailBottomSheet.newInstance(expense)
                         .show(getParentFragmentManager(), "ExpenseDetail");
             }
@@ -129,12 +128,11 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    //se premo vedi tutto apri il fragment dello storico
     private void setupSeeAll() {
         binding.tvSeeAll.setOnClickListener(v -> {
-            // Seleziona il tab Storico come se l'utente lo avesse premuto
             requireActivity()
                     .findViewById(R.id.bottom_navigation)
-                    // cast necessario per chiamare setSelectedItemId
                     .<com.google.android.material.bottomnavigation.BottomNavigationView>
                             findViewById(R.id.bottom_navigation)
                     .setSelectedItemId(R.id.historyFragment);
@@ -143,7 +141,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Ricalcola il budget ogni volta che il fragment torna visibile
         Double currentTotal = viewModel.getTodayTotal().getValue();
         updateBudgetCard(currentTotal != null ? currentTotal : 0.0);
     }

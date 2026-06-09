@@ -11,15 +11,14 @@ import okhttp3.Response;
 
 public class ExchangeRateManager {
 
-    // API gratuita, nessuna key necessaria
-    private static final String API_URL =
-            "https://api.exchangerate-api.com/v4/latest/EUR";
 
-    // Cache in SharedPreferences — aggiorna i tassi max una volta al giorno
+    private static final String API_URL ="https://api.exchangerate-api.com/v4/latest/EUR";
+
+    // Uso le Shared Preferences come cache per i tassi di conversione da aggiornare una volta al giorno
     private static final String PREF_NAME     = "exchange_rates";
     private static final String PREF_RATES    = "rates_json";
     private static final String PREF_TIMESTAMP = "rates_timestamp";
-    private static final long   CACHE_DURATION = 24 * 60 * 60 * 1000L; // 24 ore in ms
+    private static final long   CACHE_DURATION = 24 * 60 * 60 * 1000L;
 
     private static ExchangeRateManager instance;
     private final SharedPreferences prefs;
@@ -32,7 +31,7 @@ public class ExchangeRateManager {
 
     private ExchangeRateManager(Context context) {
         prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        // Carica la cache esistente in memoria
+        // carico la cache esistente in memoria se è presente
         String json = prefs.getString(PREF_RATES, null);
         if (json != null) {
             try {
@@ -50,7 +49,7 @@ public class ExchangeRateManager {
         return instance;
     }
 
-    // Restituisce i tassi — dalla cache se recenti, altrimenti li scarica
+    // funzione per restituire i tassi di conversione
     public void getRates(RatesCallback callback) {
         long lastUpdate = prefs.getLong(PREF_TIMESTAMP, 0);
         boolean cacheValid = (System.currentTimeMillis() - lastUpdate) < CACHE_DURATION;
@@ -60,7 +59,7 @@ public class ExchangeRateManager {
             return;
         }
 
-        // Scarica in background
+        // Scarico in un nuovo thread i tassi con okhttp
         new Thread(() -> {
             try {
                 OkHttpClient client = new OkHttpClient.Builder()
@@ -93,7 +92,7 @@ public class ExchangeRateManager {
         }).start();
     }
 
-    // Converte un importo da una valuta a EUR
+    // funzione per convertire ad una qualsiasi valuta
     public static double convertToBase(double amount, String fromCurrency,
                                        String baseCurrency, JSONObject rates) {
         if (fromCurrency.equals(baseCurrency)) return amount;
@@ -107,7 +106,7 @@ public class ExchangeRateManager {
                 double rate = rates.getDouble(baseCurrency);
                 return amount * rate;
             } else {
-                // Da valuta A a valuta B passando per EUR
+                // Da valuta A a valuta B
                 double rateFrom = rates.getDouble(fromCurrency);
                 double rateTo   = rates.getDouble(baseCurrency);
                 return (amount / rateFrom) * rateTo;

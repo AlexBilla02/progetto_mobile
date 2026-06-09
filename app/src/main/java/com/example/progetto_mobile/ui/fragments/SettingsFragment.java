@@ -52,10 +52,8 @@ public class SettingsFragment extends Fragment {
         String name  = user.getDisplayName();
         String email = user.getEmail();
 
-        // Nome — se non disponibile usa la parte prima della @ dell'email
         if (name != null && !name.isEmpty()) {
             binding.tvUsername.setText(name);
-            // Iniziale per l'avatar
             binding.tvAvatar.setText(name.substring(0, 1).toUpperCase());
         } else if (email != null) {
             binding.tvUsername.setText(email.split("@")[0]);
@@ -66,7 +64,6 @@ public class SettingsFragment extends Fragment {
             binding.tvEmail.setText(email);
         }
 
-        // Colore avatar — usa il colore primario
         binding.tvAvatar.getBackground().setTint(
                 androidx.core.content.ContextCompat.getColor(
                         requireContext(),
@@ -81,7 +78,6 @@ public class SettingsFragment extends Fragment {
     }
 
     private void setupBudget() {
-        // Mostra il budget attuale
         updateBudgetLabel();
 
         binding.btnSetBudget.setOnClickListener(v -> showBudgetDialog());
@@ -91,7 +87,6 @@ public class SettingsFragment extends Fragment {
         String baseCurrency = UserSession.getBaseCurrency(requireContext());
         double current = UserSession.getMonthlyBudget(requireContext());
 
-        // Input field per il budget
         EditText input = new EditText(requireContext());
         input.setInputType(
                 android.text.InputType.TYPE_CLASS_NUMBER |
@@ -139,7 +134,6 @@ public class SettingsFragment extends Fragment {
         String[] currencies = {"EUR", "USD", "GBP", "CHF", "JPY"};
         String current = UserSession.getBaseCurrency(requireContext());
 
-        // Trova l'indice della valuta attuale per pre-selezionarla
         int currentIndex = 0;
         for (int i = 0; i < currencies.length; i++) {
             if (currencies[i].equals(current)) {

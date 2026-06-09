@@ -22,7 +22,7 @@ public class UserSession {
     public static String getBaseCurrency(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(
                 "user_prefs", Context.MODE_PRIVATE);
-        return prefs.getString("base_currency", "EUR"); // default EUR
+        return prefs.getString("base_currency", "EUR");
     }
 
     public static void setBaseCurrency(Context context, String currency) {

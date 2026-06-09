@@ -38,7 +38,6 @@ public enum Category {
         }
     }
 
-    // Usato per popolare il menu a tendina nel form
     public int getIconRes() {
         switch (this) {
             case CIBO:          return R.drawable.ic_food;

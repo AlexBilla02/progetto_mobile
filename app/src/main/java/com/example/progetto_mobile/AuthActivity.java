@@ -50,7 +50,7 @@ public class AuthActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        // Se c'è già una sessione attiva vai direttamente alla MainActivity
+        // se c'è già una sessione attiva vai direttamente alla MainActivity
         if (auth.getCurrentUser() != null) {
             goToMain();
             return;
@@ -70,7 +70,6 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
-        // Pulsante principale (login o registrazione)
         binding.btnMainAction.setOnClickListener(v -> {
             if (isLoginMode) login();
             else register();
@@ -147,12 +146,8 @@ public class AuthActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        auth.signInWithCredential(credential)
-                .addOnSuccessListener(result -> goToMain())
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Errore: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show()
-                );
+        auth.signInWithCredential(credential).addOnSuccessListener(result -> goToMain()).addOnFailureListener(e ->
+                        Toast.makeText(this, "Errore: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
     private boolean validateEmailPassword(String email, String password) {
@@ -174,6 +169,6 @@ public class AuthActivity extends AppCompatActivity {
 
     private void goToMain() {
         startActivity(new Intent(this, MainActivity.class));
-        finish(); // rimuove AuthActivity dallo stack — il tasto back non torna al login
+        finish(); // rimuove AuthActivity dallo stack cosi col tasto back non torno all'authactivity
     }
 }

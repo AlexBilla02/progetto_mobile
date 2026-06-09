@@ -88,7 +88,6 @@ public class StatsFragment extends Fragment {
         cal.set(ym[0], ym[1], 1);
         String label = new SimpleDateFormat("MMMM yyyy", Locale.getDefault())
                 .format(cal.getTime());
-        // Prima lettera maiuscola
         binding.tvMonthLabel.setText(label.substring(0, 1).toUpperCase()
                 + label.substring(1));
     }
@@ -238,9 +237,8 @@ public class StatsFragment extends Fragment {
         List<BarEntry> entries = new ArrayList<>();
         List<String> labels = new ArrayList<>();
 
-        // Riuniamo l'asse X partendo da 0 (o da 1, ma a 0-indexed è più facile per i formattatori)
-        // Creiamo un array per mappare rapidamente i totali esistenti sul giorno corretto
-        float[] dailyValues = new float[daysInMonth + 1]; // 1-indexed per comodità con i giorni
+        // Riuniamo l'asse X partendo da 0
+        float[] dailyValues = new float[daysInMonth + 1];
 
         if (totals != null) {
             for (DailyTotal dt : totals) {
@@ -279,16 +277,13 @@ public class StatsFragment extends Fragment {
 
         // 5. Configura l'asse X in modo rigido sul range del mese corrente
         XAxis xAxis = binding.barChart.getXAxis();
-        xAxis.setAxisMinimum(0.5f); // Un po' di margine a sinistra del giorno 1
-        xAxis.setAxisMaximum(daysInMonth + 0.5f); // Un po' di margine a destra dell'ultimo giorno
-        xAxis.setLabelCount(daysInMonth); // Forza il posizionamento delle label
+        xAxis.setAxisMinimum(0.5f);
+        xAxis.setAxisMaximum(daysInMonth + 0.5f);
+        xAxis.setLabelCount(daysInMonth);
 
-        // Se i giorni sono troppi (es. 31), le label potrebbero sovrapporsi su schermi piccoli.
-        // Puoi forzare MPAndroidChart a saltare qualche etichetta per leggibilità pur mantenendo i 31 spazi:
         xAxis.setGranularity(1f);
         xAxis.setGranularityEnabled(true);
 
-        // Risolviamo il problema del ValueFormatter indicizzato
         xAxis.setValueFormatter(new com.github.mikephil.charting.formatter.ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {

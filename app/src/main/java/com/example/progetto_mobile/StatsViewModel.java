@@ -18,7 +18,6 @@ public class StatsViewModel extends AndroidViewModel {
     private final ExpenseDao dao;
     private final String userId;
 
-    // Mese corrente in analisi — anno e mese
     private final MutableLiveData<long[]> monthRange = new MutableLiveData<>();
 
     public final LiveData<Double> monthTotal;
@@ -72,7 +71,6 @@ public class StatsViewModel extends AndroidViewModel {
         return new long[]{start.getTimeInMillis(), end.getTimeInMillis()};
     }
 
-    // Restituisce anno e mese correntemente visualizzati
     public int[] getCurrentYearMonth() {
         long[] range = monthRange.getValue();
         Calendar cal = Calendar.getInstance();

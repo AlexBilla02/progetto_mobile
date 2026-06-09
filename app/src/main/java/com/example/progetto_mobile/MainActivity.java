@@ -21,7 +21,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // ViewBinding: genera automaticamente riferimenti a tutti gli elementi del layout
+        // ViewBinding genera automaticamente riferimenti a tutti gli elementi del layout
+        // al posto di prendere i riferimenti con R.getElement... come a lezione
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         if (UserSession.isDarkMode(this)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -32,16 +33,15 @@ public class MainActivity extends AppCompatActivity {
 
         setupNavigation();
         setupFab();
+        //recupero i tassi di conversione da ExchangeRateManager
         ExchangeRateManager.getInstance(this).getRates(
                 new ExchangeRateManager.RatesCallback() {
                     @Override
                     public void onRatesReady(JSONObject rates) {
-                        // Tassi pronti in cache — niente da fare
                         android.util.Log.d("ExchangeRate", "Tassi caricati");
                     }
                     @Override
                     public void onFailure() {
-                        // Nessun internet — userà la cache precedente se disponibile
                         android.util.Log.d("ExchangeRate", "Tassi non disponibili");
                     }
                 }
@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupNavigation() {
+        //imposto il fragment in basso per la navigazione
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
         navController = navHostFragment.getNavController();

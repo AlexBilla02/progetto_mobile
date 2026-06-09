@@ -25,7 +25,6 @@ public class OcrProcessor {
 
     public OcrProcessor(Context context) {
         this.context = context;
-        // Inizializza il riconoscitore con le opzioni di default (latino)
         recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
     }
 
@@ -40,7 +39,6 @@ public class OcrProcessor {
 
         recognizer.process(image)
                 .addOnSuccessListener(visionText -> {
-                    // Passa direttamente i blocchi invece del testo flat
                     callback.onSuccess(extractSortedText(visionText));
                 })
                 .addOnFailureListener(e ->
@@ -48,11 +46,10 @@ public class OcrProcessor {
                 );
     }
 
-    // Ordina i blocchi per coordinata Y e restituisce il testo ordinato
     private String extractSortedText(Text visionText) {
         List<Text.TextBlock> blocks = new ArrayList<>(visionText.getTextBlocks());
 
-        // Ordina per coordinata Y del bounding box (top = Y minore)
+
         blocks.sort((a, b) -> {
             if (a.getBoundingBox() == null || b.getBoundingBox() == null) return 0;
             return Integer.compare(a.getBoundingBox().top, b.getBoundingBox().top);
@@ -65,7 +62,6 @@ public class OcrProcessor {
         return sb.toString().trim();
     }
 
-    // Concatena tutti i blocchi di testo in una stringa unica
     private String extractFullText(Text visionText) {
         StringBuilder sb = new StringBuilder();
         for (Text.TextBlock block : visionText.getTextBlocks()) {

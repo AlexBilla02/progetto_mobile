@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+//classe usata semplicemente per adattare lo stile di ogni spesa nel recycler view
 public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder> {
 
     private List<Expense> expenses = new ArrayList<>();
@@ -94,7 +95,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
             tvAmount.setText(expense.getFormattedAmount());
             tvDatetime.setText(expense.getFormattedDateTime());
 
-            // Conversione valuta — mostra solo se diversa dalla valuta base
+            // Conversione valuta che mostro solo se la valuta è diversa da quella principale
             if (!expense.getCurrency().equals(baseCurrency)) {
                 ExchangeRateManager manager = ExchangeRateManager.getInstance(ctx);
                 if (manager.hasCache()) {

@@ -25,7 +25,7 @@ public class PdfExporter {
     private static final int MARGIN      = 40;
     private static final int LINE_HEIGHT = 22;
 
-    // Genera il PDF e restituisce l'Uri per condividerlo
+    // genera pdf e restituisce uri
     public static Uri export(Context context, List<Expense> expenses,
                              String periodLabel) throws IOException {
 
@@ -35,7 +35,7 @@ public class PdfExporter {
         PdfDocument.Page page = document.startPage(pageInfo);
         Canvas canvas = page.getCanvas();
 
-        // Paint per i vari stili di testo
+
         Paint paintTitle   = makePaint(20, true,  Color.parseColor("#1976D2"));
         Paint paintHeader  = makePaint(11, true,  Color.parseColor("#424242"));
         Paint paintBody    = makePaint(10, false, Color.parseColor("#212121"));
@@ -53,13 +53,10 @@ public class PdfExporter {
         // Periodo e data generazione
         canvas.drawText("Periodo: " + periodLabel, MARGIN, y, paintSub);
         y += 16;
-        String generated = "Generato il " +
-                new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                        .format(new Date());
+        String generated = "Generato il " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
         canvas.drawText(generated, MARGIN, y, paintSub);
         y += 20;
 
-        // Linea separatrice
         canvas.drawLine(MARGIN, y, PAGE_WIDTH - MARGIN, y, paintLine);
         y += 16;
 
@@ -94,7 +91,6 @@ public class PdfExporter {
             y += LINE_HEIGHT;
         }
 
-        // Linea finale e totale
         y += 4;
         canvas.drawLine(MARGIN, y, PAGE_WIDTH - MARGIN, y, paintLine);
         y += 16;
@@ -108,7 +104,7 @@ public class PdfExporter {
                 Environment.DIRECTORY_DOCUMENTS), "");
         if (!dir.exists()) dir.mkdirs();
 
-        String filename = "SpendWise_" +
+        String filename = "MyWallet_" +
                 new SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault())
                         .format(new Date()) + ".pdf";
         File file = new File(dir, filename);

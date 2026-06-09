@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+//ragionamento simile a quello di ExpenseAdapter, però qui ho ogni volta l'header col giorno e il totale
 public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // Costanti per distinguere i due tipi di riga
@@ -46,7 +47,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.listener = listener;
     }
 
-    // Riceve la lista flat di spese e la raggruppa per giorno
     public void setExpenses(List<Expense> expenses) {
         items = groupByDay(expenses);
         notifyDataSetChanged();
@@ -118,7 +118,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return expenses;
     }
 
-    // --- ViewHolder per l'intestazione del giorno ---
+    // il headerviewholder racchiude l'header del giorno col totale
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvDate;
         private final TextView tvTotal;
@@ -139,7 +139,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     }
 
-    // --- ViewHolder per la singola spesa (uguale a ExpenseAdapter) ---
+    // Questo invece è come l'expenseAdapter
     class ExpenseViewHolder extends RecyclerView.ViewHolder {
         private final ImageView tvCategoryIcon;
         private final TextView tvExpenseName;

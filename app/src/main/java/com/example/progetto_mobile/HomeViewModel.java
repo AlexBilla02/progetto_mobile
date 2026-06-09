@@ -13,8 +13,7 @@ import com.example.progetto_mobile.data.ExpenseDao;
 import java.util.Calendar;
 import java.util.List;
 
-// AndroidViewModel invece di ViewModel perché abbiamo bisogno del Context
-// per creare il database
+
 public class HomeViewModel extends AndroidViewModel {
 
     private final ExpenseDao dao;
@@ -39,7 +38,6 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void addExpense(Expense expense) {
-        // Eseguito in background tramite ExecutorService
         AppDatabase.executor.execute(() -> dao.insert(expense));
     }
 

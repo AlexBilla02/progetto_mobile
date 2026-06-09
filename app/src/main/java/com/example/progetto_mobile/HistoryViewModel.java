@@ -13,7 +13,6 @@ import java.util.List;
 
 public class HistoryViewModel extends AndroidViewModel {
 
-    // Rappresenta il filtro attualmente selezionato
     public enum Filter {
         ALL, TODAY, THIS_WEEK, LAST_7_DAYS,
         THIS_MONTH, LAST_30_DAYS, LAST_365_DAYS, CUSTOM
@@ -21,7 +20,7 @@ public class HistoryViewModel extends AndroidViewModel {
 
     private final ExpenseDao dao;
     private final MutableLiveData<long[]> dateRange = new MutableLiveData<>();
-    public final LiveData<List<Expense>> expenses;  // ← solo dichiarazione, senza assegnazione
+    public final LiveData<List<Expense>> expenses;
 
     public HistoryViewModel(Application application) {
         super(application);
@@ -63,7 +62,6 @@ public class HistoryViewModel extends AndroidViewModel {
         Calendar start = Calendar.getInstance();
         Calendar end   = Calendar.getInstance();
 
-        // Fine sempre = fine di oggi
         end.set(Calendar.HOUR_OF_DAY, 23);
         end.set(Calendar.MINUTE, 59);
         end.set(Calendar.SECOND, 59);
@@ -76,7 +74,6 @@ public class HistoryViewModel extends AndroidViewModel {
                 break;
 
             case THIS_WEEK:
-                // Da lunedì di questa settimana
                 start.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
                 start.set(Calendar.HOUR_OF_DAY, 0);
                 start.set(Calendar.MINUTE, 0);
@@ -91,7 +88,6 @@ public class HistoryViewModel extends AndroidViewModel {
                 break;
 
             case THIS_MONTH:
-                // Dall'1 del mese corrente
                 start.set(Calendar.DAY_OF_MONTH, 1);
                 start.set(Calendar.HOUR_OF_DAY, 0);
                 start.set(Calendar.MINUTE, 0);

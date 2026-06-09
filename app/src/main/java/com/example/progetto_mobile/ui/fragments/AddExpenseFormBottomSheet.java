@@ -68,9 +68,7 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Il ViewModel è condiviso con HomeFragment (stessa Activity)
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
-        // Controlla se siamo in modalità modifica
 
         if (getArguments() != null) {
             Bundle args = getArguments();
@@ -91,9 +89,7 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
 
             // Modalità receipt — solo se contiene ARG_RECEIPT_MERCHANT
             isFromReceipt = args.containsKey(ARG_RECEIPT_MERCHANT);
-            // Inizializza Gemini
             geminiApi = new GeminiApi(requireContext(), BuildConfig.GEMINI_API_KEY);
-            // Recupera il testo grezzo OCR se presente
             if (getArguments() != null && isFromReceipt) {
                 rawOcrText = getArguments().getString(ARG_RECEIPT_RAW_TEXT, "");
             }
@@ -114,9 +110,7 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
                 Category.getLabels()
         );
         binding.acvCategory.setAdapter(adapter);
-        // Imposta "Altro" come default
         binding.acvCategory.setText(Category.ALTRO.getLabel(), false);
-        // Se modifica, pre-seleziona la categoria esistente
         if (expenseToEdit != null) {
             binding.acvCategory.setText(expenseToEdit.getCategory(), false);
         }
@@ -162,7 +156,6 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
         new DatePickerDialog(
                 requireContext(),
                 (datePicker, year, month, day) -> {
-                    // Aggiorna solo anno/mese/giorno, l'ora rimane quella del time picker
                     selectedDate.set(Calendar.YEAR, year);
                     selectedDate.set(Calendar.MONTH, month);
                     selectedDate.set(Calendar.DAY_OF_MONTH, day);
@@ -185,7 +178,7 @@ public class AddExpenseFormBottomSheet extends BottomSheetDialogFragment {
                     updateTimeField();
                 },
                 hour, minute,
-                true // formato 24h
+                true
         ).show();
     }
     private void updateDateField() {
