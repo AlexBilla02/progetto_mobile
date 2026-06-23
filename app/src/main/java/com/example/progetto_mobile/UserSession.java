@@ -26,10 +26,7 @@ public class UserSession {
     }
 
     public static void setBaseCurrency(Context context, String currency) {
-        context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-                .edit()
-                .putString("base_currency", currency)
-                .apply();
+        context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE).edit().putString("base_currency", currency).apply();
     }
     public static double getMonthlyBudget(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(
@@ -38,21 +35,14 @@ public class UserSession {
     }
 
     public static void setMonthlyBudget(Context context, double budget) {
-        context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-                .edit()
-                .putLong("monthly_budget", Double.doubleToLongBits(budget))
-                .apply();
+        context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE).edit().putLong("monthly_budget", Double.doubleToLongBits(budget)).apply();
     }
 
     public static boolean isDarkMode(Context context) {
-        return context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-                .getBoolean("dark_mode", false);
+        return context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE).getBoolean("dark_mode", false);
     }
 
     public static void setDarkMode(Context context, boolean enabled) {
-        context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-                .edit()
-                .putBoolean("dark_mode", enabled)
-                .apply();
+        context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE).edit().putBoolean("dark_mode", enabled).apply();
     }
 }

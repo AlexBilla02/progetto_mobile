@@ -1,5 +1,6 @@
 package com.example.progetto_mobile;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -20,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // ViewBinding genera automaticamente riferimenti a tutti gli elementi del layout
         // al posto di prendere i riferimenti con R.getElement... come a lezione
         binding = ActivityMainBinding.inflate(getLayoutInflater());

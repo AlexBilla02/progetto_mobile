@@ -54,7 +54,7 @@ public class ReceiptParser {
     private static double extractAmount(String text) {
         String[] lines = text.split("\n");
 
-        // Strategia 1: cerca keyword TOTALE (anche parziale/corrotto)
+        // Strategia 1: cerca keyword TOTALE
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim().toLowerCase();
 

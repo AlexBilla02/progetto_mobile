@@ -40,7 +40,7 @@ public interface ExpenseDao {
     LiveData<Double> getTotalBetween(String userId, long from, long to);
 
     // Totale per categoria in un mese
-    @Query("SELECT category, SUM(amount) as total FROM expenses " +
+    @Query("SELECT category, SUM(amountBase) as total FROM expenses " +
             "WHERE userId = :userId AND date BETWEEN :from AND :to " +
             "GROUP BY category")
     LiveData<List<CategoryTotal>> getTotalByCategory(String userId, long from, long to);
@@ -50,5 +50,13 @@ public interface ExpenseDao {
             "WHERE userId = :userId AND date BETWEEN :from AND :to " +
             "GROUP BY day ORDER BY day")
     LiveData<List<DailyTotal>> getDailyTotals(String userId, long from, long to);
+
+    // Lettura sincrona — usata solo per il ricalcolo, non per la UI
+    @Query("SELECT * FROM expenses WHERE userId = :userId")
+    List<Expense> getAllExpensesForUserSync(String userId);
+
+    // Aggiornamento multiplo in un colpo solo
+    @Update
+    void updateAll(List<Expense> expenses);
 
 }

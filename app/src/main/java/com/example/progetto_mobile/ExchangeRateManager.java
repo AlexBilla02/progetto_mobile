@@ -14,7 +14,7 @@ public class ExchangeRateManager {
 
     private static final String API_URL ="https://api.exchangerate-api.com/v4/latest/EUR";
 
-    // Uso le Shared Preferences come cache per i tassi di conversione da aggiornare una volta al giorno
+    // Shared Preferences come cache per i tassi di conversione da aggiornare una volta al giorno
     private static final String PREF_NAME     = "exchange_rates";
     private static final String PREF_RATES    = "rates_json";
     private static final String PREF_TIMESTAMP = "rates_timestamp";

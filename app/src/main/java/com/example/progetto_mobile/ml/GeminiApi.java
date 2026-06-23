@@ -28,7 +28,7 @@ public class GeminiApi {
         public double amount       = 0.0;
         public String date         = "";   // formato dd/MM/yyyy
         public String time         = "";   // formato HH:mm
-        public String category     = "";   // una delle categorie predefinite
+        public String category     = "";
     }
 
     public interface GeminiCallback {
@@ -60,7 +60,6 @@ public class GeminiApi {
     }
 
     // Chiamata asincrona — il callback viene chiamato sul thread di background
-    // Ricordati di passare al main thread per aggiornare la UI
     public void analyzeReceipt(String ocrText, GeminiCallback callback) {
         android.util.Log.d("GEMINI_DEBUG", "analyzeReceipt chiamato");
 
@@ -86,13 +85,11 @@ public class GeminiApi {
     }
 
     private GeminiResult callGemini(String ocrText) throws Exception {
-        // Costruisce la lista categorie da passare a Gemini
         StringBuilder categories = new StringBuilder();
         for (Category c : Category.values()) {
             categories.append(c.getLabel()).append(", ");
         }
 
-        // Prompt che forza una risposta JSON strutturata
         String prompt = "Analizza il seguente testo estratto da uno scontrino italiano " +
                 "e rispondi SOLO con un oggetto JSON valido, senza markdown, " +
                 "senza backtick, senza spiegazioni.\n\n" +

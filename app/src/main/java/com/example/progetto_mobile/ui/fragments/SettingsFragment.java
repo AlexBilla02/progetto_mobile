@@ -13,11 +13,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import com.example.progetto_mobile.AuthActivity;
+import com.example.progetto_mobile.ExchangeRateManager;
 import com.example.progetto_mobile.R;
 import com.example.progetto_mobile.UserSession;
+import com.example.progetto_mobile.data.AppDatabase;
+import com.example.progetto_mobile.data.Expense;
+import com.example.progetto_mobile.data.ExpenseDao;
 import com.example.progetto_mobile.databinding.FragmentSettingsBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import org.json.JSONObject;
+
+import java.util.List;
 import java.util.Locale;
 
 public class SettingsFragment extends Fragment {
@@ -143,19 +151,22 @@ public class SettingsFragment extends Fragment {
         }
 
         new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.main_currency)
+                .setTitle("Valuta principale")
                 .setSingleChoiceItems(currencies, currentIndex, null)
-                .setPositiveButton(R.string.save_budget, (dialog, which) -> {
+                .setPositiveButton("Salva", (dialog, which) -> {
                     int selected = ((AlertDialog) dialog).getListView()
                             .getCheckedItemPosition();
                     String newCurrency = currencies[selected];
+
                     UserSession.setBaseCurrency(requireContext(), newCurrency);
+                    recalculateAllAmounts(newCurrency);
                     updateCurrencyLabel();
+
                     Toast.makeText(requireContext(),
-                            getString(R.string.currency_set) + newCurrency,
+                            "Valuta impostata su " + newCurrency,
                             Toast.LENGTH_SHORT).show();
                 })
-                .setNegativeButton(R.string.annulla, null)
+                .setNegativeButton("Annulla", null)
                 .show();
     }
 
@@ -194,6 +205,44 @@ public class SettingsFragment extends Fragment {
         });
     }
 
+    private void recalculateAllAmounts(String newBaseCurrency) {
+        AppDatabase db = AppDatabase.getInstance(requireContext());
+        ExpenseDao dao = db.expenseDao();
+        String userId  = UserSession.getCurrentUserId();
+        ExchangeRateManager manager = ExchangeRateManager.getInstance(requireContext());
+
+        Toast.makeText(requireContext(),
+                "Aggiornamento spese in corso...", Toast.LENGTH_SHORT).show();
+
+        manager.getRates(new ExchangeRateManager.RatesCallback() {
+            @Override
+            public void onRatesReady(JSONObject rates) {
+                AppDatabase.executor.execute(() -> {
+                    List<Expense> all = dao.getAllExpensesForUserSync(userId);
+
+                    for (Expense e : all) {
+                        double base = e.getCurrency().equals(newBaseCurrency)
+                                ? e.getAmount()
+                                : ExchangeRateManager.convertToBase(
+                                e.getAmount(), e.getCurrency(),
+                                newBaseCurrency, rates);
+                        e.setAmountBase(base);
+                    }
+
+                    dao.updateAll(all);
+                });
+            }
+
+            @Override
+            public void onFailure() {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(requireContext(),
+                                "Connessione assente: impossibile aggiornare i totali",
+                                Toast.LENGTH_LONG).show()
+                );
+            }
+        });
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();
